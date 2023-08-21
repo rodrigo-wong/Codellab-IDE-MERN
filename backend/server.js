@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
-const { log } = require("console");
 
 dotenv.config();
 
@@ -16,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(cors({
-  origin: 'https://codellab-ide-client.onrender.com',
+  origin: `${process.env.CORS_ORIGIN}`,
 }));
 
 app.use("/room", roomController);
@@ -27,7 +26,7 @@ const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
 const io = socketIO(server, {
   pingtTimeout: 60000,
   cors: {
-    origin: "https://codellab-ide-client.onrender.com",
+    origin: `${process.env.CORS_ORIGIN}`,
   },
 });
 
