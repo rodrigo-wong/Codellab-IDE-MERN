@@ -35,10 +35,28 @@ const CreateRoom = () => {
         navigate("/editor");
       } catch (err) {
         //console.log(err.message);
-        toast.error(err.message);
+        toast.error(err.message,  {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       }
     } else {
-      toast.warning("Please fill all required fields to proceed");
+      toast.warning("Please fill all required fields to proceed", {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 
