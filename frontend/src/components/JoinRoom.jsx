@@ -49,7 +49,7 @@ const JoinRoom = () => {
         });
       }
     } else {
-      toast.warning("Please fill all required fields to proceed",  {
+      toast.warn("Please fill all required fields to proceed",  {
         position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,

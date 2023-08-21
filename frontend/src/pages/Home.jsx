@@ -3,6 +3,7 @@ import { Container, Tabs, Tab, Image } from "react-bootstrap";
 import CreateRoom from "../components/CreateRoom";
 import JoinRoom from "../components/JoinRoom";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
 
 const Home = () => {
   const [key, setKey] = useState("createRoom");
@@ -33,6 +34,7 @@ const Home = () => {
           </Tab>
         </Tabs>
       </Container>
+      <ToastContainer/>
     </Container>
   );
 };
