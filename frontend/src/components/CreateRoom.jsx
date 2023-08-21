@@ -33,7 +33,7 @@ const CreateRoom = () => {
         setRoomInfo(response);
         navigate("/editor");
       } catch (err) {
-        console.log(err.message);
+        //console.log(err.message);
         alert(err.message);
       }
     }

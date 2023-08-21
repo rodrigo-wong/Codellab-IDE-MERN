@@ -39,12 +39,21 @@ io.on("connection", (socket) => {
   socket.on("leaveRoom", (data) => {
     //console.log(data);
     const roomInfo = data.roomInfo;
-    const updatedUsers = data.roomInfo.users.filter((user)=> user !== data.user.name)
+    const updatedUsers = roomInfo.users.filter((user)=> user !== data.user.name)
     const updatedRoomInfo = {...data, users:updatedUsers};
     socket.to(roomInfo.roomId).emit("usersUpdate", updatedRoomInfo);
     socket.leave(data.roomId);
     console.log("in LeaveRoom");
   });
+
+  socket.on("sendMessage", (data)=> {
+    //console.log(data);
+    const sender = data.user.name
+    const roomId = data.user.room
+    const message = data.newMessage
+    //console.log(sender, roomId, message);
+    socket.to(roomId).emit("receiveMessage", {sender:sender, message:message})
+  })
 
   socket.on("sendCodeUpdate", (data) => {
     const room = data.room;

@@ -10,8 +10,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
-
-const socket = io("http://localhost:5020");
+import socket from '../socket'
 
 const Editor = () => {
   const { user, roomInfo, setRoomInfo, setUser } = useUserContext();
@@ -21,7 +20,7 @@ const Editor = () => {
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
   const navigate = useNavigate();
-
+  
   const fetchCode = async () => {
     try {
       const fetchedCode = await fetch(
@@ -138,6 +137,15 @@ const Editor = () => {
   };
 
   useEffect(() => {
+    if (roomInfo) {
+      socket.emit("joinRoom", roomInfo);
+      fetchCode();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
     socket.on("receiveCodeUpdate", (code) => {
       //console.log("in receiveCodeUpdate");
       setCode(code);
@@ -155,15 +163,6 @@ const Editor = () => {
       }
     });
   }, [socket]);
-
-  useEffect(() => {
-    if (roomInfo) {
-      socket.emit("joinRoom", roomInfo);
-      fetchCode();
-    } else {
-      navigate("/");
-    }
-  }, []);
 
   useEffect(() => {
     socket.on("usersUpdate", (newInfo) => {
@@ -227,7 +226,7 @@ const Editor = () => {
                     className="container-fit-content d-flex flex-wrap border align-items-center py-0"
                     style={{ height: "9vh", overflowY: "scroll" }}
                   >
-                    <span className=" font-weight-bold">
+                    <span>
                       <strong>Codellaborators:&nbsp;</strong>
                     </span>
                     {roomInfo.users.map((user, index) => (
@@ -256,7 +255,7 @@ const Editor = () => {
                     />
                   </InputGroup>
                   <Container fluid>
-                    <p className="fs-5 text-center m-1">Chat</p>
+                    <p className="fs-5 text-center m-1" >Chat</p>
                     <ChatBox />
                   </Container>
                 </Container>
