@@ -27,7 +27,7 @@ const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
 const io = socketIO(server, {
   pingtTimeout: 60000,
   cors: {
-    origin: "https://codellab-ide-client.onrender.com'",
+    origin: "https://codellab-ide-client.onrender.com",
   },
 });
 
