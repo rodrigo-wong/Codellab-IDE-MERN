@@ -15,10 +15,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const allowedOrigins = ['https://codellab-ide-client.onrender.com', 'http://localhost:3000'];
-
 app.use(cors({
-  origin: allowedOrigins,
+  origin: 'https://codellab-ide-client.onrender.com',
 }));
 
 app.use("/room", roomController);
@@ -29,7 +27,7 @@ const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
 const io = socketIO(server, {
   pingtTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://codellab-ide-client.onrender.com'",
   },
 });
 
