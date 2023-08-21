@@ -15,6 +15,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(cors({
+  origin: "*",
+}));
+
 app.use("/room", roomController);
 
 const PORT = process.env.PORT;
