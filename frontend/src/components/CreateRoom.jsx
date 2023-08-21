@@ -47,7 +47,7 @@ const CreateRoom = () => {
         });
       }
     } else {
-      toast.warn("Please fill all required fields to proceed", {
+      toast.warn("Please fill all required fields", {
         position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
