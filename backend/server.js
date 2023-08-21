@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(cors({
-  origin: `${process.env.CORS_ORIGIN}`,
+  origin: "http://localhost:3000"//`${process.env.CORS_ORIGIN}`,
 }));
 
 app.use("/room", roomController);
@@ -26,7 +26,7 @@ const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
 const io = socketIO(server, {
   pingtTimeout: 60000,
   cors: {
-    origin: `${process.env.CORS_ORIGIN}`,
+    origin: "http:localhost:3000"//`${process.env.CORS_ORIGIN}`,
   },
 });
 

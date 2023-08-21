@@ -180,9 +180,9 @@ const Editor = () => {
       {user ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
-          <Container fluid className="vh-100">
+          <Container fluid className="">
             <Row>
-              <Col lg={7} className="p-0">
+              <Col lg={7} className="p-0 mb-3">
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
                   <CodeMirror
@@ -190,7 +190,7 @@ const Editor = () => {
                     theme={dracula}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
-                    height="75vh"
+                    height="77vh"
                   />
                 </Container>
                 <Container className="d-flex justify-content-center mt-3">
@@ -213,7 +213,7 @@ const Editor = () => {
               </Col>
 
               <Col lg={5} className="p-0">
-                <Container className="mt-2 ">
+                <Container className="mt-2 mb-3">
                   <Container
                     className="container-fit-content d-flex flex-wrap border align-items-center py-0"
                     style={{ height: "9vh", overflowY: "scroll" }}
