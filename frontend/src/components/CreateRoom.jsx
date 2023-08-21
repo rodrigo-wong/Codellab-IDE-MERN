@@ -38,7 +38,7 @@ const CreateRoom = () => {
         toast.error(err.message);
       }
     } else {
-      toast.warning("Please fill all required fields to proceed")
+      toast.warning("Please fill all required fields to proceed");
     }
   };
 
