@@ -3,6 +3,7 @@ import { Container, Form, Button } from "react-bootstrap";
 import { useUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {toast} from 'react-toastify';
 
 const JoinRoom = () => {
   const navigate = useNavigate();
@@ -36,8 +37,10 @@ const JoinRoom = () => {
         navigate("/editor");
       } catch (err) {
         console.log(err.message);
-        alert(err.message);
+        toast.error(err.message);
       }
+    } else {
+      toast.warning("Please fill all required fields to proceed")
     }
   };
 

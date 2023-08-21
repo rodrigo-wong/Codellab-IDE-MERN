@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.css";
 import { UserContextProvider } from "./context/UserContext";
 import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -13,6 +14,7 @@ root.render(
   <UserContextProvider>
     <BrowserRouter>
       <App />
+      <ToastContainer/>
     </BrowserRouter>
   </UserContextProvider>
 );
