@@ -14,6 +14,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+const allowedOrigins = ['https://codellab-ide-client.onrender.com'];
+app.use(cors({
+  origin: allowedOrigins,
+}));
 
 app.use("/room", roomController);
 
