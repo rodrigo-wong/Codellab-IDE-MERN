@@ -12,7 +12,7 @@ const NavBar = (leaveRoom) => {
     <Navbar className="bg-body-tertiary m-0">
       <Container className="p-0 mx-3">
         <Container className="d-flex align-items-center">
-            <Navbar.Text className="fs-2">Room#: {user.room}</Navbar.Text>
+            <Navbar.Text className="fs-3">Room#: {user.room}</Navbar.Text>
             <Button className="btn-danger ms-4" onClick={leaveRoom.handleLeave}>
               Leave room
               <FaSignOutAlt className="logout-icon ms-2" />

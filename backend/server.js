@@ -31,14 +31,19 @@ io.on("connection", (socket) => {
   console.log(socket.id, " connected to socket.io");
 
   socket.on("joinRoom", (data) => {
+    console.log(data.roomId);
     socket.join(data.roomId);
     socket.to(data.roomId).emit("usersUpdate", data);
     console.log(socket.id, " joined ", data.roomId);
   });
   socket.on("leaveRoom", (data) => {
     //console.log(data);
-    socket.to(data.roomId).emit("usersUpdate", data);
+    const roomInfo = data.roomInfo;
+    const updatedUsers = data.roomInfo.users.filter((user)=> user !== data.user.name)
+    const updatedRoomInfo = {...data, users:updatedUsers};
+    socket.to(roomInfo.roomId).emit("usersUpdate", updatedRoomInfo);
     socket.leave(data.roomId);
+    console.log("in LeaveRoom");
   });
 
   socket.on("sendCodeUpdate", (data) => {

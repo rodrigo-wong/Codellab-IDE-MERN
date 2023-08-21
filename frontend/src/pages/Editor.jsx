@@ -9,18 +9,18 @@ import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
+import ChatBox from "../components/ChatBox";
 
 const socket = io("http://localhost:5020");
 
 const Editor = () => {
-  const { user, roomInfo, setRoomInfo} = useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser } = useUserContext();
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
   const navigate = useNavigate();
-
 
   const fetchCode = async () => {
     try {
@@ -41,15 +41,18 @@ const Editor = () => {
 
   const updateCode = async (code) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/room/codeUpdate?roomId=${user.room}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          code: code,
-        }),
-      }).then((res) => res.text());
+      await fetch(
+        `${process.env.REACT_APP_API_URL}/room/codeUpdate?roomId=${user.room}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code: code,
+          }),
+        }
+      ).then((res) => res.text());
       //console.log("updated");
     } catch (err) {
       console.log(err.message);
@@ -94,19 +97,24 @@ const Editor = () => {
   const leaveRoomRequest = async () => {
     if (roomInfo) {
       try {
-        const data = await fetch(`${process.env.REACT_APP_API_URL}/room/leave`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            roomId: user.room,
-            name: user.name,
-          }),
-        }).then((res)=>res.json());
+        const data = await fetch(
+          `${process.env.REACT_APP_API_URL}/room/leave`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              roomId: user.room,
+              name: user.name,
+            }),
+          }
+        ).then((res) => res.json());
         //console.log(data);
-        socket.emit("leaveRoom", data)
-        setRoomInfo(null)
+        //console.log("in leaveRoomRequest");
+        //socket.emit("leaveRoom", data);
+        //setRoomInfo(null);
+        //setUser(null);
       } catch (err) {
         console.log(err);
       }
@@ -114,12 +122,18 @@ const Editor = () => {
   };
 
   const handleLeave = async () => {
-    try {
-      await leaveRoomRequest();
-      sessionStorage.clear();
-      navigate("/");
-    } catch (err) {
-      console.log(err.message);
+    if (roomInfo) {
+      try {
+        console.log(roomInfo);
+        socket.emit("leaveRoom", {roomInfo,user});
+        await leaveRoomRequest();
+        sessionStorage.clear();
+        setRoomInfo(null)
+        setUser(null)
+        navigate("/");
+      } catch (err) {
+        console.log(err.message);
+      }
     }
   };
 
@@ -133,7 +147,7 @@ const Editor = () => {
 
   useEffect(() => {
     socket.on("python-output", (data) => {
-      if(data.output){
+      if (data.output) {
         setOutput((prevOutput) => prevOutput + data.output);
       }
       if (data.kill) {
@@ -158,16 +172,15 @@ const Editor = () => {
   }, []);
 
   useEffect(() => {
-    const handlePopState = (e)=> {
-      e.preventDefault();
-      handleLeave()
-    }
+    const handlePopState = () => {
+      handleLeave();
+    };
     window.addEventListener("beforeunload", handleLeave);
-    window.addEventListener('popstate', handlePopState)
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener("beforeunload", handlePopState);
-      window.removeEventListener("popstate", handlePopState)
+      window.removeEventListener("beforeunload", handleLeave);
+      //window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
@@ -176,39 +189,54 @@ const Editor = () => {
       {user ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
-          <Container fluid>
+          <Container fluid className="vh-100">
             <Row>
-              <Col lg={7}>
-                <Container className="mt-3">
-                  <p className="text-center fs-3">Editor</p>
+              <Col lg={7} className="p-0">
+                <Container className="mt-2">
+                  <p className="text-center fs-5 mb-1">Editor</p>
                   <CodeMirror
                     value={code}
                     theme={dracula}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
-                    height="600px"
+                    height="75vh"
                   />
+                </Container>
+                <Container className="d-flex justify-content-center mt-3">
+                  <Button
+                    size="lg"
+                    className={
+                      "text-center mx-1" +
+                      `${
+                        codeRunning
+                          ? "text-center btn-danger mx-1"
+                          : "text-center btn-primary mx-1"
+                      }`
+                    }
+                    onClick={handleRun}
+                  >
+                    {codeRunning ? "Stop" : "Run"}
+                  </Button>
+                  <DownloadModal code={code} />
                 </Container>
               </Col>
 
-              <Col lg={5} className="me-0">
-                <Container className="mt-3 ">
+              <Col lg={5} className="p-0">
+                <Container className="mt-2 ">
                   <Container
-                    className="d-flex flex-wrap border align-items-center"
-                    style={{ height: "10vh", overflowY: true }}
+                    className="container-fit-content d-flex flex-wrap border align-items-center py-0"
+                    style={{ height: "9vh", overflowY: "scroll" }}
                   >
-                    <span className="fs-6 font-weight-bold">
+                    <span className=" font-weight-bold">
                       <strong>Codellaborators:&nbsp;</strong>
                     </span>
-                    {roomInfo.users.map((user,index) => (
-                      <span className="fs-6" key={index}>
-                        {user} ; &nbsp;
-                      </span>
+                    {roomInfo.users.map((user, index) => (
+                      <span key={index}>{user} ; &nbsp;</span>
                     ))}
                   </Container>
-                  <p className="text-center mt-3 fs-4">Shell</p>
-                  <CodeMirror height="400px" value={output} readOnly={true} />
-                  <InputGroup className="mb-2 w-100 mt-2">
+                  <p className="text-center my-1 fs-5">Shell</p>
+                  <CodeMirror height="40vh" value={output} readOnly={true} />
+                  <InputGroup className="mb-1 w-100 mt-2">
                     <InputGroup.Text id="inputGroup-sizing-default">
                       Input :
                     </InputGroup.Text>
@@ -227,19 +255,9 @@ const Editor = () => {
                       disabled={!codeRunning}
                     />
                   </InputGroup>
-                  <Container className="d-flex justify-content-around">
-                    <Button
-                      size="lg"
-                      className={
-                        codeRunning
-                          ? "text-center btn-danger"
-                          : "text-center btn-lg btn-primary"
-                      }
-                      onClick={handleRun}
-                    >
-                      {codeRunning ? "Stop" : "Run"}
-                    </Button>
-                    <DownloadModal code={code}/>
+                  <Container fluid>
+                    <p className="fs-5 text-center m-1">Chat</p>
+                    <ChatBox />
                   </Container>
                 </Container>
               </Col>
