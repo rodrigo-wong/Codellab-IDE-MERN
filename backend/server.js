@@ -76,10 +76,12 @@ io.on("connection", (socket) => {
   
     pythonProcess.stdout.on("data", (data) => {
       const lines = data.toString().split('\n');
+      //console.log(lines);
       
       for (const line of lines) {
         if (outputLines < maxOutputLines) {
-          socket.emit("python-output", { output: (line+"\n") });
+          //console.log(line);
+          socket.emit("python-output", { output: line});
           outputLines++;
         } else {
           socket.emit("python-output", { kill: true });

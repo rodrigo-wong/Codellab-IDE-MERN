@@ -1,6 +1,5 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
@@ -80,9 +79,9 @@ const Editor = () => {
   };
 
   const sendInput = () => {
+    setOutput((prevOutput) => prevOutput + input + "\n");
     socket.emit("send-input", input);
     setInput("");
-    setOutput((prevOutput) => prevOutput + input + "\n");
   };
 
   const handleCodeChange = (editor) => {
@@ -96,7 +95,7 @@ const Editor = () => {
   const leaveRoomRequest = async () => {
     if (roomInfo) {
       try {
-        const data = await fetch(
+        await fetch(
           `${process.env.REACT_APP_API_URL}/room/leave`,
           {
             method: "PUT",
@@ -109,11 +108,6 @@ const Editor = () => {
             }),
           }
         ).then((res) => res.json());
-        //console.log(data);
-        //console.log("in leaveRoomRequest");
-        //socket.emit("leaveRoom", data);
-        //setRoomInfo(null);
-        //setUser(null);
       } catch (err) {
         console.log(err);
       }
@@ -123,7 +117,6 @@ const Editor = () => {
   const handleLeave = async () => {
     if (roomInfo) {
       try {
-        console.log(roomInfo);
         socket.emit("leaveRoom", {roomInfo,user});
         await leaveRoomRequest();
         sessionStorage.clear();
@@ -147,7 +140,6 @@ const Editor = () => {
 
   useEffect(() => {
     socket.on("receiveCodeUpdate", (code) => {
-      //console.log("in receiveCodeUpdate");
       setCode(code);
     });
     //delayedUpdateRequest();
@@ -156,7 +148,7 @@ const Editor = () => {
   useEffect(() => {
     socket.on("python-output", (data) => {
       if (data.output) {
-        setOutput((prevOutput) => prevOutput + data.output);
+        setOutput((prevOutput) => prevOutput + data.output + "\n");
       }
       if (data.kill) {
         setCodeRunning(false);

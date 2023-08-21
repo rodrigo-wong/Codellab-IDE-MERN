@@ -48,7 +48,7 @@ const ChatBox = () => {
             </div>
           ))}
         </Container>
-        <InputGroup className="">
+        <InputGroup className="mt-2">
           <Form.Control
             value={newMessage}
             placeholder="Type your message here"
