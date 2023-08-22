@@ -92,33 +92,10 @@ const Editor = () => {
     delayedUpdateRequest(value);
   };
 
-  const leaveRoomRequest = async () => {
-    if (roomInfo) {
-      try {
-        await fetch(
-          `${process.env.REACT_APP_API_URL}/room/leave`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              roomId: user.room,
-              name: user.name,
-            }),
-          }
-        ).then((res) => res.json());
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  };
-
   const handleLeave = async () => {
-    if (roomInfo) {
+    if (roomInfo,user) {
       try {
-        socket.emit("leaveRoom", {roomInfo,user});
-        await leaveRoomRequest();
+        socket.emit("leaveRoom", {roomInfo, user});
         sessionStorage.clear();
         setRoomInfo(null)
         setUser(null)

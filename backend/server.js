@@ -39,14 +39,30 @@ io.on("connection", (socket) => {
     socket.to(data.roomId).emit("usersUpdate", data);
     console.log(socket.id, " joined ", data.roomId);
   });
-  socket.on("leaveRoom", (data) => {
-    //console.log(data);
+
+  socket.on("leaveRoom", async(data) => {
+    const fetch = await import("node-fetch");
     const roomInfo = data.roomInfo;
-    const updatedUsers = roomInfo.users.filter((user)=> user !== data.user.name)
-    const updatedRoomInfo = {...data, users:updatedUsers};
-    socket.to(roomInfo.roomId).emit("usersUpdate", updatedRoomInfo);
-    socket.leave(data.roomId);
-    console.log("in LeaveRoom");
+    try{
+      const newRoomInfo = await fetch.default(
+        `${process.env.SERVER_URL}/room/leave`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            roomId: roomInfo.room,
+            name: data.user.name,
+          }),
+        }
+      ).then((res) => res.json());
+      socket.to(newRoomInfo.roomId).emit("usersUpdate", newRoomInfo);
+      socket.leave(data.roomId);
+      console.log("in LeaveRoom");
+    }catch(err){
+      console.log(err.message);
+    }
   });
 
   socket.on("sendMessage", (data)=> {
