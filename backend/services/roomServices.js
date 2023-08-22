@@ -58,7 +58,7 @@ const leaveRoom = expressAsyncHandler(async (req, res) => {
         //console.log("here");
         await Room.findByIdAndDelete(room._id);
       }
-      res.status(200).json(room);
+      res.json(room);
     } catch (err) {
       //console.log("in leaveRoom request");
       console.log(err.message);

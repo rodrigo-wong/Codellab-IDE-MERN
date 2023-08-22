@@ -92,8 +92,9 @@ const Editor = () => {
     delayedUpdateRequest(value);
   };
 
-  const handleLeave = async () => {
-    if (roomInfo,user) {
+
+  const handleLeave = () => {
+    if (roomInfo) {
       try {
         socket.emit("leaveRoom", {roomInfo, user});
         sessionStorage.clear();
@@ -146,10 +147,10 @@ const Editor = () => {
     window.addEventListener("beforeunload", handleLeave);
     window.addEventListener("popstate", handlePopState);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleLeave);
-      //window.removeEventListener("popstate", handlePopState);
-    };
+    // return () => {
+    //   //window.removeEventListener("beforeunload", handleLeave);
+    //   //window.removeEventListener("popstate", handlePopState);
+    // };
   }, []);
 
   return (

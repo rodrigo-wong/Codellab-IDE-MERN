@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
+//const fetch = require("node-fetch");
+const { log } = require("console");
 
 dotenv.config();
 
@@ -15,7 +17,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(cors({
-  origin:`${process.env.CORS_ORIGIN}`,
+  origin:"http://localhost:3000 "//`${process.env.CORS_ORIGIN}`,
 }));
 
 app.use("/room", roomController);
@@ -26,7 +28,7 @@ const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
 const io = socketIO(server, {
   pingtTimeout: 60000,
   cors: {
-    origin:`${process.env.CORS_ORIGIN}`,
+    origin:"http://localhost:3000"//`${process.env.CORS_ORIGIN}`,
   },
 });
 
@@ -39,29 +41,27 @@ io.on("connection", (socket) => {
     socket.to(data.roomId).emit("usersUpdate", data);
     console.log(socket.id, " joined ", data.roomId);
   });
-
   socket.on("leaveRoom", async(data) => {
-    const fetch = await import("node-fetch");
     const roomInfo = data.roomInfo;
-    try{
+    const fetch = await import("node-fetch");
+    try {
       const newRoomInfo = await fetch.default(
-        `${process.env.SERVER_URL}/room/leave`,
+        `${process.env.SERVER_URL}/leave`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            roomId: roomInfo.room,
+            roomId: roomInfo.roomId,
             name: data.user.name,
           }),
         }
       ).then((res) => res.json());
-      socket.to(newRoomInfo.roomId).emit("usersUpdate", newRoomInfo);
+      socket.to(roomInfo.roomId).emit("usersUpdate", newRoomInfo);
       socket.leave(data.roomId);
-      console.log("in LeaveRoom");
-    }catch(err){
-      console.log(err.message);
+    } catch (err) {
+      console.log(err);
     }
   });
 
