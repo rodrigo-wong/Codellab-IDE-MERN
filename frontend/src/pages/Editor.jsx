@@ -1,6 +1,6 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
@@ -9,17 +9,21 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
-import socket from '../socket'
+import socket from "../socket";
 
-const Editor = () => {
+const EditorPage = () => {
   const { user, roomInfo, setRoomInfo, setUser } = useUserContext();
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
+  const mirrorView = useRef(null);
+  const [updateCaret, setUpdateCaret] = useState(false);
+  const [currentCursor, setCurrentCursor] = useState(0);
+
   const navigate = useNavigate();
-  
+
   const fetchCode = async () => {
     try {
       const fetchedCode = await fetch(
@@ -37,7 +41,7 @@ const Editor = () => {
     }
   };
 
-  const updateCode = async (code) => {
+  const updateCode = async (value) => {
     try {
       await fetch(
         `${process.env.REACT_APP_API_URL}/room/codeUpdate?roomId=${user.room}`,
@@ -47,7 +51,7 @@ const Editor = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            code: code,
+            code: value,
           }),
         }
       ).then((res) => res.text());
@@ -57,12 +61,12 @@ const Editor = () => {
     }
   };
 
-  const delayedUpdateRequest = (code) => {
+  const delayedUpdateRequest = (value) => {
     //console.log("in delayed request");
     clearTimeout(updateTimeOut);
     setUpdateTimeOut(
       setTimeout(() => {
-        updateCode(code);
+        updateCode(value);
       }, 5000)
     );
   };
@@ -84,22 +88,26 @@ const Editor = () => {
     setInput("");
   };
 
-  const handleCodeChange = (editor) => {
-    const value = editor;
-    //console.log(value);
+  const handleCodeChange = (value, view) => {
+    let n = view.view.viewState.state.selection.ranges[0].from;
+    console.log(n);
     setCode(value);
-    socket.emit("sendCodeUpdate", { code: value, room: user.room });
+    setCurrentCursor(n);
     delayedUpdateRequest(value);
+    socket.emit("sendCodeUpdate", {
+      code: value,
+      room: user.room,
+      cursor: n,
+    });
   };
-
 
   const handleLeave = () => {
     if (roomInfo) {
       try {
-        socket.emit("leaveRoom", {roomInfo, user});
+        socket.emit("leaveRoom", { roomInfo, user });
         sessionStorage.clear();
-        setRoomInfo(null)
-        setUser(null)
+        setRoomInfo(null);
+        setUser(null);
         navigate("/");
       } catch (err) {
         console.log(err.message);
@@ -116,12 +124,39 @@ const Editor = () => {
     }
   }, []);
 
+  const check = (originCursor, newCode) => {
+    let newLocation;
+    if (originCursor < currentCursor) {
+      if (newCode.length > code.length) {
+        newLocation = currentCursor + 1;
+      } else {
+        newLocation = currentCursor - 1;
+      }
+      setCurrentCursor(newLocation);
+    }
+    if(currentCursor > newCode.length){
+      setCurrentCursor(newCode.length)
+    }
+  };
+
   useEffect(() => {
-    socket.on("receiveCodeUpdate", (code) => {
-      setCode(code);
+    socket.on("receiveCodeUpdate", (data) => {
+      check(data.cursor, data.code);
+      setCode(data.code);
     });
-    //delayedUpdateRequest();
-  }, []);
+  });
+
+  useEffect(() => {
+
+    if (mirrorView !== null && mirrorView.current !== null) {
+      if (mirrorView.current.view !== undefined) {
+        mirrorView.current.view.viewState.state.selection.ranges[0].from =
+          currentCursor;
+        mirrorView.current.view.viewState.state.selection.ranges[0].to =
+          currentCursor;
+      }
+    }
+  }, [check]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -138,7 +173,7 @@ const Editor = () => {
     socket.on("usersUpdate", (newInfo) => {
       setRoomInfo(newInfo);
     });
-  }, []);
+  }, [code]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -164,10 +199,15 @@ const Editor = () => {
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
                   <CodeMirror
+                    ref={mirrorView}
                     value={code}
                     theme={dracula}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
+                    onKeyDown={(e)=>{
+                      let caret = mirrorView.current.view.viewState.state.selection.ranges[0].from
+                      setCurrentCursor(caret);
+                    }}
                     height="77vh"
                   />
                 </Container>
@@ -175,12 +215,8 @@ const Editor = () => {
                   <Button
                     size="lg"
                     className={
-                      "text-center mx-1" +
-                      `${
-                        codeRunning
-                          ? "text-center btn-danger mx-1"
-                          : "text-center btn-primary mx-1"
-                      }`
+                      "text-center mx-1 " +
+                      `${codeRunning ? "btn-danger" : "btn-primary"}`
                     }
                     onClick={handleRun}
                   >
@@ -225,7 +261,7 @@ const Editor = () => {
                     />
                   </InputGroup>
                   <Container fluid>
-                    <p className="fs-5 text-center m-1" >Chat</p>
+                    <p className="fs-5 text-center m-1">Chat</p>
                     <ChatBox />
                   </Container>
                 </Container>
@@ -240,4 +276,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default EditorPage;

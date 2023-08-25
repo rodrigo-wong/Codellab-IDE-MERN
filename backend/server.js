@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
-//const fetch = require("node-fetch");
 const { log } = require("console");
 
 dotenv.config();
@@ -76,7 +75,8 @@ io.on("connection", (socket) => {
 
   socket.on("sendCodeUpdate", (data) => {
     const room = data.room;
-    socket.to(room).emit("receiveCodeUpdate", data.code);
+    //console.log(data.cursor);
+    socket.to(room).emit("receiveCodeUpdate", {code: data.code, cursor:data.cursor});
   });
 
   let pythonProcess;
