@@ -89,8 +89,8 @@ const EditorPage = () => {
   };
 
   const handleCodeChange = (value, view) => {
-    let n = view.view.viewState.state.selection.ranges[0].from;
-    console.log(n);
+    const n = view.view.viewState.state.selection.ranges[0].from;
+    //console.log(n);
     setCode(value);
     setCurrentCursor(n);
     delayedUpdateRequest(value);
@@ -124,24 +124,24 @@ const EditorPage = () => {
     }
   }, []);
 
-  const check = (originCursor, newCode) => {
-    let newLocation;
-    if (originCursor < currentCursor) {
-      if (newCode.length > code.length) {
-        newLocation = currentCursor + 1;
-      } else {
-        newLocation = currentCursor - 1;
-      }
-      setCurrentCursor(newLocation);
-    }
-    if(currentCursor > newCode.length){
-      setCurrentCursor(newCode.length)
-    }
-  };
+  // const check = (originCursor, newCode) => {
+  //   let newLocation;
+  //   if (originCursor < currentCursor) {
+  //     if (newCode.length > code.length) {
+  //       newLocation = currentCursor + 1;
+  //     } else {
+  //       newLocation = currentCursor - 1;
+  //     }
+  //     setCurrentCursor(newLocation);
+  //   }
+  //   if(currentCursor > newCode.length){
+  //     setCurrentCursor(newCode.length)
+  //   }
+  // };
 
   useEffect(() => {
     socket.on("receiveCodeUpdate", (data) => {
-      check(data.cursor, data.code);
+      //check(data.cursor, data.code);
       setCode(data.code);
     });
   });
@@ -156,7 +156,7 @@ const EditorPage = () => {
           currentCursor;
       }
     }
-  }, [check]);
+  }, [code]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
