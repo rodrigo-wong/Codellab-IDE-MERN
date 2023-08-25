@@ -18,30 +18,23 @@ const EditorPage = () => {
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
-  const mirrorView = useRef(null);
-  const [updateCaret, setUpdateCaret] = useState(false);
-  const [currentCursor, setCurrentCursor] = useState(0);
 
   const navigate = useNavigate();
 
   const fetchCode = async () => {
-    if (roomInfo && user) {
-      try {
-        const fetchedCode = await fetch(
-          `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        ).then((res) => res.text());
-        setCode(fetchedCode);
-      } catch (err) {
-        console.log(err.message);
-      }
-    } else {
-      navigate("/")
+    try {
+      const fetchedCode = await fetch(
+        `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((res) => res.text());
+      setCode(fetchedCode);
+    } catch (err) {
+      console.log(err.message);
     }
   };
 
@@ -92,16 +85,12 @@ const EditorPage = () => {
     setInput("");
   };
 
-  const handleCodeChange = (value, view) => {
-    const n = view.view.viewState.state.selection.ranges[0].from;
-    //console.log(n);
+  const handleCodeChange = (value) => {
     setCode(value);
-    setCurrentCursor(n);
     delayedUpdateRequest(value);
     socket.emit("sendCodeUpdate", {
       code: value,
       room: user.room,
-      cursor: n,
     });
   };
 
@@ -116,7 +105,7 @@ const EditorPage = () => {
   };
 
   useEffect(() => {
-    if (roomInfo) {
+    if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
       fetchCode();
     } else {
@@ -124,42 +113,11 @@ const EditorPage = () => {
     }
   }, []);
 
-  const check = (originCursor, newCode) => {
-    let newLocation;
-    if (originCursor < currentCursor) {
-      if (newCode.length > code.length) {
-        newLocation = currentCursor + 1;
-      } else {
-        newLocation = currentCursor - 1;
-      }
-      setCurrentCursor(newLocation);
-    }
-    if (currentCursor > newCode.length) {
-      setCurrentCursor(newCode.length);
-    }
-  };
-
   useEffect(() => {
     socket.on("receiveCodeUpdate", (data) => {
-      check(data.cursor, data.code);
       setCode(data.code);
     });
   });
-
-  useEffect(() => {
-    if (mirrorView !== null && mirrorView.current !== null) {
-      if (mirrorView.current.view !== undefined) {
-        mirrorView.current.view.viewState.state.selection.ranges[0].from =
-          currentCursor;
-        mirrorView.current.view.viewState.state.selection.ranges[0].to =
-          currentCursor;
-        mirrorView.current.state.selection.ranges[0].from = currentCursor;
-        mirrorView.current.state.selection.ranges[0].to = currentCursor;
-        //console.log(mirrorView.current.view.viewState.state.selection.ranges[0], "view");
-        //console.log(mirrorView.current.state.selection.ranges[0], "state");
-      }
-    }
-  }, [check]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -187,7 +145,7 @@ const EditorPage = () => {
 
     return () => {
       window.removeEventListener("beforeunload", handleLeave);
-      window.removeEventListener("popstate", handlePopState);
+      //window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
@@ -202,17 +160,10 @@ const EditorPage = () => {
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
                   <CodeMirror
-                    ref={mirrorView}
                     value={code}
                     theme={dracula}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
-                    onKeyDown={(e) => {
-                      let caret =
-                        mirrorView.current.view.viewState.state.selection
-                          .ranges[0].from;
-                      setCurrentCursor(caret);
-                    }}
                     height="77vh"
                   />
                 </Container>
