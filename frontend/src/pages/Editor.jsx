@@ -25,7 +25,7 @@ const EditorPage = () => {
   const navigate = useNavigate();
 
   const fetchCode = async () => {
-    if (roomInfo) {
+    if (roomInfo && user) {
       try {
         const fetchedCode = await fetch(
           `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
@@ -40,6 +40,8 @@ const EditorPage = () => {
       } catch (err) {
         console.log(err.message);
       }
+    } else {
+      navigate("/")
     }
   };
 
@@ -153,6 +155,8 @@ const EditorPage = () => {
           currentCursor;
         mirrorView.current.state.selection.ranges[0].from = currentCursor;
         mirrorView.current.state.selection.ranges[0].to = currentCursor;
+        //console.log(mirrorView.current.view.viewState.state.selection.ranges[0], "view");
+        //console.log(mirrorView.current.state.selection.ranges[0], "state");
       }
     }
   }, [check]);
@@ -181,10 +185,10 @@ const EditorPage = () => {
     window.addEventListener("beforeunload", handleLeave);
     window.addEventListener("popstate", handlePopState);
 
-    // return () => {
-    //   //window.removeEventListener("beforeunload", handleLeave);
-    //   //window.removeEventListener("popstate", handlePopState);
-    // };
+    return () => {
+      window.removeEventListener("beforeunload", handleLeave);
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
 
   return (
@@ -207,10 +211,6 @@ const EditorPage = () => {
                       let caret =
                         mirrorView.current.view.viewState.state.selection
                           .ranges[0].from;
-                      mirrorView.current.state.selection.ranges[0].from =
-                        currentCursor;
-                      mirrorView.current.state.selection.ranges[0].to =
-                        currentCursor;
                       setCurrentCursor(caret);
                     }}
                     height="77vh"
