@@ -25,19 +25,21 @@ const EditorPage = () => {
   const navigate = useNavigate();
 
   const fetchCode = async () => {
-    try {
-      const fetchedCode = await fetch(
-        `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => res.text());
-      setCode(fetchedCode);
-    } catch (err) {
-      console.log(err.message);
+    if (roomInfo) {
+      try {
+        const fetchedCode = await fetch(
+          `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        ).then((res) => res.text());
+        setCode(fetchedCode);
+      } catch (err) {
+        console.log(err.message);
+      }
     }
   };
 
@@ -104,10 +106,10 @@ const EditorPage = () => {
   const handleLeave = () => {
     if (roomInfo) {
       navigate("/");
-        socket.emit("leaveRoom", { roomInfo, user });
-        sessionStorage.clear();
-        setRoomInfo(null);
-        setUser(null);
+      socket.emit("leaveRoom", { roomInfo, user });
+      sessionStorage.clear();
+      setRoomInfo(null);
+      setUser(null);
     }
   };
 
@@ -130,8 +132,8 @@ const EditorPage = () => {
       }
       setCurrentCursor(newLocation);
     }
-    if(currentCursor > newCode.length){
-      setCurrentCursor(newCode.length)
+    if (currentCursor > newCode.length) {
+      setCurrentCursor(newCode.length);
     }
   };
 
@@ -149,6 +151,8 @@ const EditorPage = () => {
           currentCursor;
         mirrorView.current.view.viewState.state.selection.ranges[0].to =
           currentCursor;
+        mirrorView.current.state.selection.ranges[0].from = currentCursor;
+        mirrorView.current.state.selection.ranges[0].to = currentCursor;
       }
     }
   }, [check]);
@@ -199,8 +203,14 @@ const EditorPage = () => {
                     theme={dracula}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
-                    onKeyDown={(e)=>{
-                      let caret = mirrorView.current.view.viewState.state.selection.ranges[0].from
+                    onKeyDown={(e) => {
+                      let caret =
+                        mirrorView.current.view.viewState.state.selection
+                          .ranges[0].from;
+                      mirrorView.current.state.selection.ranges[0].from =
+                        currentCursor;
+                      mirrorView.current.state.selection.ranges[0].to =
+                        currentCursor;
                       setCurrentCursor(caret);
                     }}
                     height="77vh"
