@@ -103,15 +103,11 @@ const EditorPage = () => {
 
   const handleLeave = () => {
     if (roomInfo) {
-      try {
+      navigate("/");
         socket.emit("leaveRoom", { roomInfo, user });
         sessionStorage.clear();
         setRoomInfo(null);
         setUser(null);
-        navigate("/");
-      } catch (err) {
-        console.log(err.message);
-      }
     }
   };
 
@@ -124,30 +120,29 @@ const EditorPage = () => {
     }
   }, []);
 
-  // const check = (originCursor, newCode) => {
-  //   let newLocation;
-  //   if (originCursor < currentCursor) {
-  //     if (newCode.length > code.length) {
-  //       newLocation = currentCursor + 1;
-  //     } else {
-  //       newLocation = currentCursor - 1;
-  //     }
-  //     setCurrentCursor(newLocation);
-  //   }
-  //   if(currentCursor > newCode.length){
-  //     setCurrentCursor(newCode.length)
-  //   }
-  // };
+  const check = (originCursor, newCode) => {
+    let newLocation;
+    if (originCursor < currentCursor) {
+      if (newCode.length > code.length) {
+        newLocation = currentCursor + 1;
+      } else {
+        newLocation = currentCursor - 1;
+      }
+      setCurrentCursor(newLocation);
+    }
+    if(currentCursor > newCode.length){
+      setCurrentCursor(newCode.length)
+    }
+  };
 
   useEffect(() => {
     socket.on("receiveCodeUpdate", (data) => {
-      //check(data.cursor, data.code);
+      check(data.cursor, data.code);
       setCode(data.code);
     });
   });
 
   useEffect(() => {
-
     if (mirrorView !== null && mirrorView.current !== null) {
       if (mirrorView.current.view !== undefined) {
         mirrorView.current.view.viewState.state.selection.ranges[0].from =
@@ -156,7 +151,7 @@ const EditorPage = () => {
           currentCursor;
       }
     }
-  }, [code]);
+  }, [check]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
