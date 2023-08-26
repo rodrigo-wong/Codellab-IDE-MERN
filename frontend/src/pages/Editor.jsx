@@ -105,15 +105,10 @@ const EditorPage = () => {
   };
 
   useEffect(() => {
-    try {
-      if (roomInfo && user) {
-        socket.emit("joinRoom", roomInfo);
-        fetchCode();
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      console.log(err.message);
+    if (roomInfo && user) {
+      socket.emit("joinRoom", roomInfo);
+      fetchCode();
+    } else {
       navigate("/");
     }
   }, []);
@@ -148,10 +143,10 @@ const EditorPage = () => {
     window.addEventListener("beforeunload", handleLeave);
     window.addEventListener("popstate", handlePopState);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleLeave);
+    //return () => {
+      //window.removeEventListener("beforeunload", handleLeave);
       //window.removeEventListener("popstate", handlePopState);
-    };
+    //};
   }, []);
 
   return (
