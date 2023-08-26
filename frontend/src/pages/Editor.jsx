@@ -1,6 +1,6 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
@@ -105,10 +105,15 @@ const EditorPage = () => {
   };
 
   useEffect(() => {
-    if (roomInfo && user) {
-      socket.emit("joinRoom", roomInfo);
-      fetchCode();
-    } else {
+    try {
+      if (roomInfo && user) {
+        socket.emit("joinRoom", roomInfo);
+        fetchCode();
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err.message);
       navigate("/");
     }
   }, []);
