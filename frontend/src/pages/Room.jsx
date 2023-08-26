@@ -128,27 +128,6 @@ const Room = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("receiveCodeUpdate", function (data) {
-      const newCode = data.code;
-      const otherCaret = data.cursor;
-      var newCaret;
-      if (otherCaret < currentCaret) {
-        if (newCode.length > code.length) {
-          newCaret = currentCaret + 1;
-          setCurrentCaret(newCaret);
-        } else {
-          newCaret = currentCaret - 1;
-          setCurrentCaret(newCaret);
-        }
-      }
-      if (currentCaret >= newCode.length) {
-        setCurrentCaret(newCode.length);
-      }
-      setCode(newCode);
-    });
-  });
-
-  useEffect(() => {
     if (mirrorRef.current !== null) {
       console.log(currentCaret);
       console.log(code.length);
@@ -167,6 +146,27 @@ const Room = () => {
         console.log(err.message);
       }
     }
+  });
+
+  useEffect(() => {
+    socket.on("receiveCodeUpdate", function (data) {
+      const newCode = data.code;
+      const otherCaret = data.cursor;
+      var newCaret;
+      if (otherCaret < currentCaret) {
+        if (newCode.length > code.length) {
+          newCaret = currentCaret + 1;
+          setCurrentCaret(newCaret);
+        } else {
+          newCaret = currentCaret - 1;
+          setCurrentCaret(newCaret);
+        }
+      }
+      if (currentCaret >= newCode.length) {
+        setCurrentCaret(newCode.length);
+      }
+      setCode(newCode);
+    });
   });
 
   useEffect(() => {
