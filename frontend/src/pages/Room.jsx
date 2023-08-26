@@ -1,6 +1,6 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
@@ -18,6 +18,9 @@ const EditorPage = () => {
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
+  const [currentCaret, setCurrentCaret] = useState(0);
+  const [updatingCaret, setUpdatingCaret] = useState(false);
+  const mirrorRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -86,11 +89,16 @@ const EditorPage = () => {
   };
 
   const handleCodeChange = (value) => {
+    const cursorLocation =
+      mirrorRef.current.view.viewState.state.selection.ranges[0].from;
+    console.log(cursorLocation);
+    setCurrentCaret(cursorLocation);
     setCode(value);
     delayedUpdateRequest(value);
     socket.emit("sendCodeUpdate", {
       code: value,
       room: user.room,
+      cursor: cursorLocation,
     });
   };
 
@@ -104,27 +112,59 @@ const EditorPage = () => {
     }
   };
 
-  const handleRefresh = () => {
-    if (roomInfo) {
-      socket.emit("leaveRoom", { roomInfo, user });
-      sessionStorage.clear();
-      setRoomInfo(null);
-      setUser(null);
-    }
-  };
-
   useEffect(() => {
     if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
       fetchCode();
+    } else {
+      navigate("/");
     }
   }, []);
 
   useEffect(() => {
-    socket.on("receiveCodeUpdate", (data) => {
-      setCode(data.code);
+    socket.on("receiveCodeUpdate", function (data) {
+      const newCode = data.code;
+      const otherCaret = data.cursor;
+      var newCaret;
+      if (otherCaret < currentCaret) {
+        if (newCode.length > code.length) {
+          newCaret = currentCaret + 1;
+          setCurrentCaret(newCaret);
+        } else {
+          newCaret = currentCaret - 1;
+          setCurrentCaret(newCaret);
+          console.log("-1");
+        }
+      }
+
+
+
+      setCode(newCode);
+      setUpdatingCaret(true);
     });
-  }, []);
+  }, [code]);
+
+  useEffect(() => {
+    if (mirrorRef.current !== null) {
+      console.log(currentCaret);
+      console.log(code.length);
+      try {
+        if (mirrorRef.current.view !== undefined) {
+          if(currentCaret <= code.length){
+          mirrorRef.current.view.viewState.state.selection.ranges[0].from =
+            currentCaret;
+          mirrorRef.current.view.viewState.state.selection.ranges[0].to =
+            currentCaret;
+          } else {
+            setCurrentCaret(0);
+          }
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+    setUpdatingCaret(false);
+  }, [updatingCaret]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -147,7 +187,7 @@ const EditorPage = () => {
     const handlePopState = () => {
       handleLeave();
     };
-    window.addEventListener("beforeunload", handleRefresh);
+    window.addEventListener("beforeunload", handleLeave);
     window.addEventListener("popstate", handlePopState);
 
     //return () => {
@@ -167,8 +207,10 @@ const EditorPage = () => {
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
                   <CodeMirror
+                    ref={mirrorRef}
                     value={code}
                     theme={dracula}
+                    autoFocus={true}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
                     height="77vh"

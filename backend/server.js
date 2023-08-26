@@ -75,7 +75,8 @@ io.on("connection", (socket) => {
 
   socket.on("sendCodeUpdate", (data) => {
     const room = data.room;
-    socket.to(room).emit("receiveCodeUpdate", {code: data.code});
+    console.log(data.cursor);
+    socket.to(room).emit("receiveCodeUpdate", {code: data.code, cursor:data.cursor});
   });
 
   let pythonProcess;
