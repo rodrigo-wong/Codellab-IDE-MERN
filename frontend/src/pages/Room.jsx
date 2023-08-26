@@ -154,8 +154,6 @@ const EditorPage = () => {
             currentCaret;
           mirrorRef.current.view.viewState.state.selection.ranges[0].to =
             currentCaret;
-          } else {
-            setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
           }
         }
       } catch (err) {
