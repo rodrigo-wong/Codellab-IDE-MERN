@@ -5,7 +5,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
@@ -104,12 +104,19 @@ const EditorPage = () => {
     }
   };
 
+  const handleRefresh = () => {
+    if (roomInfo) {
+      socket.emit("leaveRoom", { roomInfo, user });
+      sessionStorage.clear();
+      setRoomInfo(null);
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
     if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
       fetchCode();
-    } else {
-      navigate("/");
     }
   }, []);
 
@@ -117,7 +124,7 @@ const EditorPage = () => {
     socket.on("receiveCodeUpdate", (data) => {
       setCode(data.code);
     });
-  },[]);
+  }, []);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -140,18 +147,18 @@ const EditorPage = () => {
     const handlePopState = () => {
       handleLeave();
     };
-    window.addEventListener("beforeunload", handleLeave);
+    window.addEventListener("beforeunload", handleRefresh);
     window.addEventListener("popstate", handlePopState);
 
     //return () => {
-      //window.removeEventListener("beforeunload", handleLeave);
-      //window.removeEventListener("popstate", handlePopState);
+    //window.removeEventListener("beforeunload", handleLeave);
+    //window.removeEventListener("popstate", handlePopState);
     //};
   }, []);
 
   return (
     <Container fluid className="p-0">
-      {user ? (
+      {roomInfo ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
           <Container fluid className="">
@@ -226,7 +233,20 @@ const EditorPage = () => {
           </Container>
         </Container>
       ) : (
-        ""
+        <Container fluid style={{padding:"5% 25%"}}>
+          <div className="text-center border border-3">
+            <p className="m-3" style={{ fontSize: "30px" }}>
+              You have lost connection to the room
+            </p>
+            <p>
+              <a
+                href="https://codellab-ide-client.onrender.com/"
+              >
+                Click here to go back to Home page
+              </a>
+            </p>
+          </div>
+        </Container>
       )}
     </Container>
   );
