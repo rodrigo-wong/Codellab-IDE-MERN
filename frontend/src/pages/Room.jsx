@@ -145,24 +145,8 @@ const Room = () => {
         setCurrentCaret(newCode.length);
       }
       setCode(newCode);
-      if (mirrorRef.current !== null) {
-        try {
-          if (mirrorRef.current.view !== undefined) {
-            if (currentCaret < code.length) {
-              mirrorRef.current.view.viewState.state.selection.ranges[0].from =
-                currentCaret;
-              mirrorRef.current.view.viewState.state.selection.ranges[0].to =
-                currentCaret;
-              mirrorRef.current.state.selection.ranges[0].from = currentCaret;
-              mirrorRef.current.state.selection.ranges[0].to = currentCaret;
-            }
-          }
-        } catch (err) {
-          console.log(err.message);
-        }
-      }
     });
-  }, [handleCodeChange]);
+  });
 
   useEffect(() => {
     if (mirrorRef.current !== null) {
