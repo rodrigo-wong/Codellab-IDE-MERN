@@ -96,11 +96,11 @@ const EditorPage = () => {
 
   const handleLeave = () => {
     if (roomInfo) {
-      navigate("/");
       socket.emit("leaveRoom", { roomInfo, user });
       sessionStorage.clear();
       setRoomInfo(null);
       setUser(null);
+      navigate("/");
     }
   };
 
