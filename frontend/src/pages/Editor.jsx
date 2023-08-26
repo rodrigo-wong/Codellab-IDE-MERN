@@ -117,7 +117,7 @@ const EditorPage = () => {
     socket.on("receiveCodeUpdate", (data) => {
       setCode(data.code);
     });
-  });
+  },[]);
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -134,7 +134,7 @@ const EditorPage = () => {
     socket.on("usersUpdate", (newInfo) => {
       setRoomInfo(newInfo);
     });
-  }, [code]);
+  }, []);
 
   useEffect(() => {
     const handlePopState = () => {
