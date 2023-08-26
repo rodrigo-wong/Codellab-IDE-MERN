@@ -233,20 +233,7 @@ const EditorPage = () => {
           </Container>
         </Container>
       ) : (
-        <Container fluid style={{padding:"5% 25%"}}>
-          <div className="text-center border border-3">
-            <p className="m-3" style={{ fontSize: "30px" }}>
-              You have lost connection to the room
-            </p>
-            <p>
-              <a
-                href="https://codellab-ide-client.onrender.com/"
-              >
-                Click here to go back to Home page
-              </a>
-            </p>
-          </div>
-        </Container>
+        ""
       )}
     </Container>
   );
