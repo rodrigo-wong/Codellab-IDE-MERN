@@ -91,7 +91,7 @@ const EditorPage = () => {
   const handleCodeChange = (value) => {
     const cursorLocation =
       mirrorRef.current.view.viewState.state.selection.ranges[0].from;
-    console.log(cursorLocation);
+    //console.log(cursorLocation);
     setCurrentCaret(cursorLocation);
     setCode(value);
     delayedUpdateRequest(value);
@@ -133,7 +133,6 @@ const EditorPage = () => {
         } else {
           newCaret = currentCaret - 1;
           setCurrentCaret(newCaret);
-          console.log("-1");
         }
       }
 
@@ -146,8 +145,8 @@ const EditorPage = () => {
 
   useEffect(() => {
     if (mirrorRef.current !== null) {
-      console.log(currentCaret);
-      console.log(code.length);
+      //console.log(currentCaret);
+      //console.log(code.length);
       try {
         if (mirrorRef.current.view !== undefined) {
           if(currentCaret <= code.length){
@@ -156,7 +155,7 @@ const EditorPage = () => {
           mirrorRef.current.view.viewState.state.selection.ranges[0].to =
             currentCaret;
           } else {
-            setCurrentCaret(0);
+            setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
           }
         }
       } catch (err) {
@@ -213,6 +212,14 @@ const EditorPage = () => {
                     autoFocus={true}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
+                    onKeyDown={(e)=>{
+                      setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
+                      //console.log(currentCaret);
+                    }}
+                    onClick={(e)=>{
+                      setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
+                      //console.log(currentCaret);
+                    }}
                     height="77vh"
                   />
                 </Container>
