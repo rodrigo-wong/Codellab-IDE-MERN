@@ -12,7 +12,14 @@ import ChatBox from "../components/ChatBox";
 import socket from "../socket";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, currentCaret, setCurrentCaret } = useUserContext();
+  const {
+    user,
+    roomInfo,
+    setRoomInfo,
+    setUser,
+    currentCaret,
+    setCurrentCaret,
+  } = useUserContext();
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
@@ -134,8 +141,8 @@ const Room = () => {
           setCurrentCaret(newCaret);
         }
       }
-      if(currentCaret >= newCode.length){
-        setCurrentCaret(newCode.length)
+      if (currentCaret >= newCode.length) {
+        setCurrentCaret(newCode.length);
       }
       setCode(newCode);
     });
@@ -147,11 +154,13 @@ const Room = () => {
       console.log(code.length);
       try {
         if (mirrorRef.current.view !== undefined) {
-          if(currentCaret < code.length){
-          mirrorRef.current.view.viewState.state.selection.ranges[0].from =
-            currentCaret;
-          mirrorRef.current.view.viewState.state.selection.ranges[0].to =
-            currentCaret;
+          if (currentCaret < code.length) {
+            mirrorRef.current.view.viewState.state.selection.ranges[0].from =
+              currentCaret;
+            mirrorRef.current.view.viewState.state.selection.ranges[0].to =
+              currentCaret;
+            mirrorRef.current.state.selection.ranges[0].from = currentCaret;
+            mirrorRef.current.state.selection.ranges[0].to = currentCaret;
           }
         }
       } catch (err) {
@@ -207,8 +216,11 @@ const Room = () => {
                     autoFocus={true}
                     extensions={loadLanguage("python")}
                     onChange={handleCodeChange}
-                    onKeyDown={(e)=>{
-                      setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
+                    onKeyDown={(e) => {
+                      setCurrentCaret(
+                        mirrorRef.current.view.viewState.state.selection
+                          .ranges[0].from
+                      );
                       //console.log(currentCaret);
                     }}
                     // onMouseUp={(e)=>{
