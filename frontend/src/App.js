@@ -1,5 +1,5 @@
 import './App.css';
-import Editor from './pages/Editor';
+import Room from './pages/Room';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 
@@ -9,7 +9,7 @@ function App() {
     <>
       <Routes>
         <Route path='/' Component={Home}/>
-        <Route path='/editor' Component={Editor}/>
+        <Route path='/room/:roomId' Component={Room}/>
       </Routes>
     </>
   );

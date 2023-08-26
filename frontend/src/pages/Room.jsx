@@ -5,7 +5,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-themes-all";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";

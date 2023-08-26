@@ -32,7 +32,7 @@ const CreateRoom = () => {
         sessionStorage.setItem("user", JSON.stringify({ name: name, room: room }));
         setUser({ name: name, room: room });
         setRoomInfo(response);
-        navigate("/editor");
+        navigate(`/room/${room}`);
       } catch (err) {
         //console.log(err.message);
         toast.error(err.message,  {

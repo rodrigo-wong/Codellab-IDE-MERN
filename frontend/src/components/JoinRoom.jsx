@@ -34,7 +34,7 @@ const JoinRoom = () => {
         );
         setUser({ name: name, room: room });
         setRoomInfo(data);
-        navigate("/editor");
+        navigate(`/room/${room}`);
       } catch (err) {
         console.log(err.message);
         toast.error(err.message, {
