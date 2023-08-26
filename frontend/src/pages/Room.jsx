@@ -11,14 +11,13 @@ import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
 import socket from "../socket";
 
-const EditorPage = () => {
-  const { user, roomInfo, setRoomInfo, setUser } = useUserContext();
+const Room = () => {
+  const { user, roomInfo, setRoomInfo, setUser, currentCaret, setCurrentCaret } = useUserContext();
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
-  const [currentCaret, setCurrentCaret] = useState(0);
   const [updatingCaret, setUpdatingCaret] = useState(false);
   const mirrorRef = useRef(null);
 
@@ -135,33 +134,31 @@ const EditorPage = () => {
           setCurrentCaret(newCaret);
         }
       }
-
-
-
+      if(currentCaret >= newCode.length){
+        setCurrentCaret(newCode.length)
+      }
       setCode(newCode);
-      setUpdatingCaret(true);
     });
-  }, [code]);
+  }, [handleCodeChange]);
 
   useEffect(() => {
     if (mirrorRef.current !== null) {
+      console.log(currentCaret);
+      console.log(code.length);
       try {
         if (mirrorRef.current.view !== undefined) {
-          if(currentCaret <= code.length){
+          if(currentCaret < code.length){
           mirrorRef.current.view.viewState.state.selection.ranges[0].from =
             currentCaret;
           mirrorRef.current.view.viewState.state.selection.ranges[0].to =
             currentCaret;
-          } else {
-            setCurrentCaret(code.length)
           }
         }
       } catch (err) {
         console.log(err.message);
       }
     }
-    setUpdatingCaret(false);
-  }, [updatingCaret]);
+  });
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -214,10 +211,10 @@ const EditorPage = () => {
                       setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
                       //console.log(currentCaret);
                     }}
-                    onClick={(e)=>{
-                      setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
-                      //console.log(currentCaret);
-                    }}
+                    // onMouseUp={(e)=>{
+                    //   setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
+                    //   //console.log(currentCaret);
+                    // }}
                     height="77vh"
                   />
                 </Container>
@@ -286,4 +283,4 @@ const EditorPage = () => {
   );
 };
 
-export default EditorPage;
+export default Room;

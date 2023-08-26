@@ -12,12 +12,15 @@ export const useUserContext = () => {
 export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [roomInfo, setRoomInfo] = useState();
+  const [currentCaret, setCurrentCaret] = useState(0);
 
   const values = {
     user,
     setUser,
     roomInfo,
-    setRoomInfo
+    setRoomInfo,
+    currentCaret,
+    setCurrentCaret
   };
 
   return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
