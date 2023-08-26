@@ -145,8 +145,6 @@ const EditorPage = () => {
 
   useEffect(() => {
     if (mirrorRef.current !== null) {
-      //console.log(currentCaret);
-      //console.log(code.length);
       try {
         if (mirrorRef.current.view !== undefined) {
           if(currentCaret <= code.length){
@@ -154,6 +152,8 @@ const EditorPage = () => {
             currentCaret;
           mirrorRef.current.view.viewState.state.selection.ranges[0].to =
             currentCaret;
+          } else {
+            setCurrentCaret(code.length)
           }
         }
       } catch (err) {
