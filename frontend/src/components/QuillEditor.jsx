@@ -5,8 +5,6 @@ import socket from "../socket";
 import { useUserContext } from "../context/UserContext";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
-import "../"
-import { useAsyncValue } from "react-router-dom";
 
 const QuillEditor = () => {
   const [quill, setQuill] = useState(null);

@@ -9,8 +9,6 @@ import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
 import socket from "../socket";
 import QuillEditor from "../components/QuillEditor";
-import ReactQuill from "react-quill";
-import hljs from "highlight.js";
 
 const Room = () => {
   const { user, roomInfo, setRoomInfo, setUser, code, setCode } =
