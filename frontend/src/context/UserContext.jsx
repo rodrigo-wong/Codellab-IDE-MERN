@@ -10,11 +10,14 @@ export const useUserContext = () => {
 
 // Create the context provider component
 export const UserContextProvider = ({ children }) => {
+  const [code, setCode] = useState("")
   const [user, setUser] = useState();
   const [roomInfo, setRoomInfo] = useState();
   const [currentCaret, setCurrentCaret] = useState(0);
 
   const values = {
+    code,
+    setCode,
     user,
     setUser,
     roomInfo,

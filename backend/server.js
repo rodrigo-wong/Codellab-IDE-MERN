@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
   console.log(socket.id, " connected to socket.io");
 
   socket.on("joinRoom", (data) => {
-    console.log(data.roomId);
+    //console.log(data.roomId);
     socket.join(data.roomId);
     socket.to(data.roomId).emit("usersUpdate", data);
     console.log(socket.id, " joined ", data.roomId);
@@ -64,6 +64,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("sendChanges", (data)=>{
+    // console.log(data.roomId);
+     //console.log(data.delta);
+    // socket.to(data.roomId).emit("receiveChanges", data.delta)
+    socket.broadcast.emit("receiveChanges",data.delta)
+   }) 
+
   socket.on("sendMessage", (data)=> {
     //console.log(data);
     const sender = data.user.name
@@ -73,10 +80,6 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("receiveMessage", {sender:sender, message:message})
   })
 
-  socket.on("sendCodeUpdate", (data) => {
-    const room = data.room;
-    socket.to(room).emit("receiveCodeUpdate", {code: data.code, cursor:data.cursor});
-  });
 
   let pythonProcess;
 

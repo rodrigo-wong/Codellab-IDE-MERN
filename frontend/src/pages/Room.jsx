@@ -2,25 +2,22 @@ import React from "react";
 import { useUserContext } from "../context/UserContext";
 import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { dracula } from "@uiw/codemirror-themes-all";
-import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
 import socket from "../socket";
+import QuillEditor from "../components/QuillEditor";
+import ReactQuill from "react-quill";
+import hljs from "highlight.js";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, currentCaret, setCurrentCaret } = useUserContext();
-  const [code, setCode] = useState("");
+  const { user, roomInfo, setRoomInfo, setUser, code, setCode } =
+    useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
-  const [updateTimeOut, setUpdateTimeOut] = useState(null);
-  const [updatingCaret, setUpdatingCaret] = useState(false);
-  const mirrorRef = useRef(null);
-
   const navigate = useNavigate();
 
   const fetchCode = async () => {
@@ -40,36 +37,6 @@ const Room = () => {
     }
   };
 
-  const updateCode = async (value) => {
-    try {
-      await fetch(
-        `${process.env.REACT_APP_API_URL}/room/codeUpdate?roomId=${user.room}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: value,
-          }),
-        }
-      ).then((res) => res.text());
-      //console.log("updated");
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const delayedUpdateRequest = (value) => {
-    //console.log("in delayed request");
-    clearTimeout(updateTimeOut);
-    setUpdateTimeOut(
-      setTimeout(() => {
-        updateCode(value);
-      }, 5000)
-    );
-  };
-
   const handleRun = () => {
     setOutput("");
     if (!codeRunning) {
@@ -87,20 +54,6 @@ const Room = () => {
     setInput("");
   };
 
-  const handleCodeChange = (value) => {
-    const cursorLocation =
-      mirrorRef.current.view.viewState.state.selection.ranges[0].from;
-    //console.log(cursorLocation);
-    setCurrentCaret(cursorLocation);
-    setCode(value);
-    delayedUpdateRequest(value);
-    socket.emit("sendCodeUpdate", {
-      code: value,
-      room: user.room,
-      cursor: cursorLocation,
-    });
-  };
-
   const handleLeave = () => {
     if (roomInfo) {
       socket.emit("leaveRoom", { roomInfo, user });
@@ -114,51 +67,11 @@ const Room = () => {
   useEffect(() => {
     if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
-      fetchCode();
+      //fetchCode();
     } else {
       navigate("/");
     }
   }, []);
-
-  useEffect(() => {
-    socket.on("receiveCodeUpdate", function (data) {
-      const newCode = data.code;
-      const otherCaret = data.cursor;
-      var newCaret;
-      if (otherCaret < currentCaret) {
-        if (newCode.length > code.length) {
-          newCaret = currentCaret + 1;
-          setCurrentCaret(newCaret);
-        } else {
-          newCaret = currentCaret - 1;
-          setCurrentCaret(newCaret);
-        }
-      }
-      if(currentCaret >= newCode.length){
-        setCurrentCaret(newCode.length)
-      }
-      setCode(newCode);
-    });
-  }, [handleCodeChange]);
-
-  useEffect(() => {
-    if (mirrorRef.current !== null) {
-      console.log(currentCaret);
-      console.log(code.length);
-      try {
-        if (mirrorRef.current.view !== undefined) {
-          if(currentCaret < code.length){
-          mirrorRef.current.view.viewState.state.selection.ranges[0].from =
-            currentCaret;
-          mirrorRef.current.view.viewState.state.selection.ranges[0].to =
-            currentCaret;
-          }
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    }
-  });
 
   useEffect(() => {
     socket.on("python-output", (data) => {
@@ -200,25 +113,12 @@ const Room = () => {
               <Col lg={7} className="p-0 mb-3">
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
-                  <CodeMirror
-                    ref={mirrorRef}
-                    value={code}
-                    theme={dracula}
-                    autoFocus={true}
-                    extensions={loadLanguage("python")}
-                    onChange={handleCodeChange}
-                    onKeyDown={(e)=>{
-                      setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
-                      //console.log(currentCaret);
-                    }}
-                    // onMouseUp={(e)=>{
-                    //   setCurrentCaret(mirrorRef.current.view.viewState.state.selection.ranges[0].from);
-                    //   //console.log(currentCaret);
-                    // }}
-                    height="77vh"
-                  />
+                  <QuillEditor/>
                 </Container>
-                <Container className="d-flex justify-content-center mt-3">
+                <Container
+                  className="d-flex justify-content-center"
+                  style={{ marginTop: "65px" }}
+                >
                   <Button
                     size="lg"
                     className={
