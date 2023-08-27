@@ -11,29 +11,12 @@ import socket from "../socket";
 import QuillEditor from "../components/QuillEditor";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code, setCode } =
+  const { user, roomInfo, setRoomInfo, setUser, code} =
     useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const navigate = useNavigate();
-
-  const fetchCode = async () => {
-    try {
-      const fetchedCode = await fetch(
-        `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => res.text());
-      setCode(fetchedCode);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
 
   const handleRun = () => {
     setOutput("");
