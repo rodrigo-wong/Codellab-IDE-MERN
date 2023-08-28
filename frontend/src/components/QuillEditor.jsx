@@ -25,14 +25,14 @@ const QuillEditor = () => {
           }),
         }
       ).then((res) => res.text());
-      console.log("updated");
+      //console.log("updated");
     } catch (err) {
       console.log(err.message);
     }
   };
 
   const delayedUpdateRequest = (value) => {
-    console.log("in delayed request");
+    //console.log("in delayed request");
     clearTimeout(updateTimeOut);
     setUpdateTimeOut(
       setTimeout(() => {

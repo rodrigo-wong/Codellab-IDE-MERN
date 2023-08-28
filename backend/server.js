@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
 
   let pythonProcess;
 
-  socket.on("run-python", async (code) => {
+  socket.on("runPython", async (code) => {
     if (pythonProcess && !pythonProcess.killed) {
       pythonProcess.kill();
       pythonProcess = null;
@@ -102,17 +102,17 @@ io.on("connection", (socket) => {
       for (const line of lines) {
         if (outputLines < maxOutputLines) {
           //console.log(line);
-          socket.emit("python-output", { output: line});
+          socket.emit("pythonOutput", { output: line});
           outputLines++;
         } else {
-          socket.emit("python-output", { kill: true });
+          socket.emit("pythonOutput", { kill: true });
           pythonProcess.kill();
         }
       }
     });
 
     pythonProcess.stderr.on("data", (data) => {
-      socket.emit("python-output", { output: data.toString(), kill: true });
+      socket.emit("pythonOutput", { output: data.toString(), kill: true });
       pythonProcess.kill();
       //pythonProcess = null;
     });
@@ -120,7 +120,7 @@ io.on("connection", (socket) => {
     pythonProcess.on("close", (code) => {
       if (code === 0) {
         console.log("Python process has finished successfully.");
-        socket.emit("python-output", {
+        socket.emit("pythonOutput", {
           output: "Code finished running...",
           kill: true,
         });
@@ -130,7 +130,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("send-input", (input) => {
+  socket.on("sendInput", (input) => {
     if (pythonProcess && !pythonProcess.killed) {
       pythonProcess.stdin.write(input + "\n");
     }

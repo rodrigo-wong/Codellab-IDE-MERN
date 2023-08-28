@@ -11,27 +11,27 @@ import socket from "../socket";
 import QuillEditor from "../components/QuillEditor";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code} =
-    useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser, code } = useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
+  const outputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleRun = () => {
     setOutput("");
     if (!codeRunning) {
       setCodeRunning(true);
-      socket.emit("run-python", code);
+      socket.emit("runPython", code);
     } else {
       setCodeRunning(false);
-      socket.emit("run-python", code);
+      socket.emit("runPython", code);
     }
   };
 
   const sendInput = () => {
     setOutput((prevOutput) => prevOutput + input + "\n");
-    socket.emit("send-input", input);
+    socket.emit("sendInput", input);
     setInput("");
   };
 
@@ -55,7 +55,7 @@ const Room = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("python-output", (data) => {
+    socket.on("pythonOutput", (data) => {
       if (data.output) {
         setOutput((prevOutput) => prevOutput + data.output + "\n");
       }
@@ -70,6 +70,14 @@ const Room = () => {
       setRoomInfo(newInfo);
     });
   }, []);
+
+  useEffect(() => {
+    if (outputRef !== null) {
+      if (outputRef.current.view !== undefined) {
+        outputRef.current.view.viewState.scrollAnchorPos = output.length
+      }
+    }
+  }, [output]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -94,7 +102,7 @@ const Room = () => {
               <Col lg={7} className="p-0 mb-3">
                 <Container className="mt-2">
                   <p className="text-center fs-5 mb-1">Editor</p>
-                  <QuillEditor/>
+                  <QuillEditor />
                 </Container>
                 <Container
                   className="d-flex justify-content-center"
@@ -128,7 +136,12 @@ const Room = () => {
                     ))}
                   </Container>
                   <p className="text-center my-1 fs-5">Shell</p>
-                  <CodeMirror height="40vh" value={output} readOnly={true} />
+                  <CodeMirror
+                    ref={outputRef}
+                    height="40vh"
+                    value={output}
+                    readOnly={true}
+                  />
                   <InputGroup className="mb-1 w-100 mt-2">
                     <InputGroup.Text id="inputGroup-sizing-default">
                       Input :
