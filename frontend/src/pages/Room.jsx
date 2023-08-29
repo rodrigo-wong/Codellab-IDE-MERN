@@ -72,7 +72,7 @@ const Room = () => {
   }, []);
 
   useEffect(() => {
-    if (outputRef !== null) {
+    if (outputRef.current !== null) {
       if (outputRef.current.view !== undefined) {
         outputRef.current.view.viewState.scrollAnchorPos = output.length
       }

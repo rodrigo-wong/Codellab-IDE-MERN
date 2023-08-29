@@ -46,7 +46,7 @@ const QuillEditor = () => {
 
     const handler = (delta) => {
       quill.updateContents(delta);
-      setCode(quill.getText())
+      setCode(quill.getText());
     };
     socket.on("receiveChanges", handler);
     return () => {
@@ -64,15 +64,13 @@ const QuillEditor = () => {
       setCode(value);
     };
     quill.on("text-change", handler);
-    
   }, [socket, quill]);
 
-  useEffect(()=>{
-    delayedUpdateRequest(code)
-  },[code])
+  useEffect(() => {
+    delayedUpdateRequest(code);
+  }, [code]);
 
-
-  const wrapperRef = useCallback( async(wrapper) => {
+  const wrapperRef = useCallback(async (wrapper) => {
     if (wrapper === null) return;
     wrapper.innerHTML = "";
     const editor = document.createElement("div");
@@ -81,8 +79,13 @@ const QuillEditor = () => {
       modules: {
         syntax: {
           highlight: (text) => hljs.highlight("python", text).value,
-        }, 
-        toolbar: [["code-block"],], 
+        },
+        toolbar: [
+          [{ font: [] }],
+          [{ size: ["small", false, "large", "huge"] }],
+          [{'color':[]}, {'background': []}],
+          ["code-block"],
+        ],
       },
       theme: "snow",
     });
@@ -98,7 +101,7 @@ const QuillEditor = () => {
         }
       ).then((res) => res.text());
 
-      q.setText(fetchedCode)
+      q.setText(fetchedCode);
     } catch (err) {
       console.log(err.message);
     }
