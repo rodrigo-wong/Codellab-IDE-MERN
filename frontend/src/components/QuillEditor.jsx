@@ -68,7 +68,7 @@ const QuillEditor = () => {
 
   useEffect(() => {
     delayedUpdateRequest(code);
-  }, [code]);
+  }, [socket,quill]);
 
   const wrapperRef = useCallback(async (wrapper) => {
     if (wrapper === null) return;

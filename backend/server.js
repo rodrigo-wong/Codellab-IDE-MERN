@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
-const { log } = require("console");
 
 dotenv.config();
 
