@@ -66,8 +66,8 @@ io.on("connection", (socket) => {
   socket.on("sendChanges", (data)=>{
     // console.log(data.roomId);
      //console.log(data.delta);
-    // socket.to(data.roomId).emit("receiveChanges", data.delta)
-    socket.broadcast.emit("receiveChanges",data.delta)
+    socket.to(data.roomId).emit("receiveChanges", data.delta)
+    //socket.broadcast.emit("receiveChanges",data.delta)
    }) 
 
   socket.on("sendMessage", (data)=> {
