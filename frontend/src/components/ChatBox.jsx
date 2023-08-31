@@ -37,18 +37,18 @@ const ChatBox = () => {
 
   return (
     <Row>
-      <Col className="border border-2 p-0 ">
+      <Col className="border border-2 border-secondary p-0 text-light " style={{backgroundColor:'#333'}}>
         <Container style={{ height: "18vh", overflowY: "auto" }} ref={chatContainerRef}>
           {messages.map((message, index) => (
             <div key={index} className="message">
-              <span style={{ color: "blue", fontWeight: "700" }}>
+              <span className='text-warning' style={{fontWeight: "700" }}>
                 {message.sender}:{" "}
               </span>
               <span>{message.message}</span>
             </div>
           ))}
         </Container>
-        <InputGroup className="mt-2">
+        <InputGroup className="mt-2 ">
           <Form.Control
             value={newMessage}
             placeholder="Type your message here"

@@ -10,16 +10,16 @@ const Home = () => {
   const [key, setKey] = useState("createRoom");
 
   return (
-    <Container fluid>
-      <Container fluid className="w-50 mx-auto text-center m-5">
+    <Container fluid className="vh-100 custom-container p-0 m-0 bg-dark">
+      <Container fluid className="w-50 mx-auto text-center p-5">
         <Image
           src="/codellab-logo.png"
           alt="logo"
-          style={{ width: "40%" }}
+          style={{ width: "45%", minWidth:"200px" }}
           fluid
         />
       </Container>
-      <Container fluid className="w-50 mx-auto">
+      <Container fluid className="w-25 mx-auto">
         <Tabs
           activeKey={key}
           onSelect={(k) => setKey(k)}

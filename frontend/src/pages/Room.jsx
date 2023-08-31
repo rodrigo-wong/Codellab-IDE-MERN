@@ -2,6 +2,7 @@ import React from "react";
 import { useUserContext } from "../context/UserContext";
 import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
+import { darcula } from "@uiw/codemirror-themes-all";
 import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
@@ -74,7 +75,7 @@ const Room = () => {
   useEffect(() => {
     if (outputRef.current !== null) {
       if (outputRef.current.view !== undefined) {
-        outputRef.current.view.viewState.scrollAnchorPos = output.length
+        outputRef.current.view.viewState.scrollAnchorPos = output.length;
       }
     }
   }, [output]);
@@ -93,21 +94,20 @@ const Room = () => {
   }, []);
 
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-0 bg-dark">
       {roomInfo ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
-          <Container fluid className="">
+          <Container fluid className="mt-2">
             <Row>
               <Col lg={7} className="p-0 mb-3">
-                <Container className="mt-2">
-                  <p className="text-center fs-5 mb-1">Editor</p>
-                  <QuillEditor />
+                <Container className="mt-1">
+                  <p className="text-center fs-5 mb-1 text-light">Editor</p>
+                  <Container style={{ backgroundColor: "#333", padding:"0", height:'77vh' }}>
+                    <QuillEditor />
+                  </Container>
                 </Container>
-                <Container
-                  className="d-flex justify-content-center"
-                  style={{ marginTop: "65px" }}
-                >
+                <Container className="d-flex justify-content-center mt-3">
                   <Button
                     size="lg"
                     className={
@@ -123,10 +123,10 @@ const Room = () => {
               </Col>
 
               <Col lg={5} className="p-0">
-                <Container className="mt-2 mb-3">
+                <Container className="mt-2">
                   <Container
-                    className="container-fit-content d-flex flex-wrap border align-items-center py-0"
-                    style={{ height: "9vh", overflowY: "scroll" }}
+                    className="container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 text-light"
+                    style={{ height: "9vh", overflowY: "scroll", backgroundColor:'#333' }}
                   >
                     <span>
                       <strong>Codellaborators:&nbsp;</strong>
@@ -135,14 +135,15 @@ const Room = () => {
                       <span key={index}>{user} ; &nbsp;</span>
                     ))}
                   </Container>
-                  <p className="text-center my-1 fs-5">Shell</p>
+                  <p className="text-center text-light my-1 fs-5">Shell</p>
                   <CodeMirror
                     ref={outputRef}
                     height="40vh"
                     value={output}
                     readOnly={true}
+                    theme={darcula}
                   />
-                  <InputGroup className="mb-1 w-100 mt-2">
+                  <InputGroup className="mb-1 w-100 mt-2" >
                     <InputGroup.Text id="inputGroup-sizing-default">
                       Input :
                     </InputGroup.Text>
@@ -162,7 +163,7 @@ const Room = () => {
                     />
                   </InputGroup>
                   <Container fluid>
-                    <p className="fs-5 text-center m-1">Chat</p>
+                    <p className="fs-5 text-center text-light m-1">Chat</p>
                     <ChatBox />
                   </Container>
                 </Container>

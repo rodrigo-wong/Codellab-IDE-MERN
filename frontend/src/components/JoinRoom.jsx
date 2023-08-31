@@ -75,7 +75,7 @@ const JoinRoom = () => {
           controlId="name"
           onChange={(e) => setName(e.target.value)}
         >
-          <Form.Label>Name</Form.Label>
+          <Form.Label className="text-light">Name</Form.Label>
           <Form.Control type="text" placeholder="Enter Name" />
         </Form.Group>
 
@@ -84,7 +84,7 @@ const JoinRoom = () => {
           controlId="roomNumber"
           onChange={(e) => setRoom(e.target.value)}
         >
-          <Form.Label>Room ID</Form.Label>
+          <Form.Label className="text-light">Room ID</Form.Label>
           <Form.Control type="text" placeholder="Enter Room#" />
         </Form.Group>
 

@@ -83,7 +83,6 @@ const QuillEditor = () => {
         toolbar: [
           [{ font: [] }],
           [{ size: ["small", false, "large", "huge"] }],
-          [{'color':[]}, {'background': []}],
           ["code-block"],
         ],
       },
@@ -108,9 +107,7 @@ const QuillEditor = () => {
   }, []);
 
   return (
-    <>
       <div className="editor" ref={wrapperRef}></div>
-    </>
   );
 };
 

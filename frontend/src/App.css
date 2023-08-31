@@ -1,13 +1,14 @@
+.editor {
+  background-color: #333;
+  color: white;
+  height: 72vh ;
+  border: none;
+}
 .ql-toolbar {
   background-color: lightgray;
-  
+  height: 5vh;
 }
-.editor {
-  height: 68vh;
-}
-.ql-syntax{
-  background-color: darkgrey;
-}
+
 .ql-editor {
   font-size: 20px;
 }
