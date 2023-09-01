@@ -94,7 +94,7 @@ const Room = () => {
   }, []);
 
   return (
-    <Container fluid className="vh-100 p-0 bg-dark">
+    <Container fluid className="vh-200 p-0 bg-dark">
       {roomInfo ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
@@ -162,7 +162,7 @@ const Room = () => {
                       disabled={!codeRunning}
                     />
                   </InputGroup>
-                  <Container fluid>
+                  <Container fluid className="mb-3">
                     <p className="fs-5 text-center text-light m-1">Chat</p>
                     <ChatBox />
                   </Container>
