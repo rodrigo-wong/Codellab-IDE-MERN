@@ -97,13 +97,21 @@ const Room = () => {
     <Container fluid className="p-0 bg-dark">
       {roomInfo ? (
         <Container fluid className="p-0">
-          <NavBar handleLeave={handleLeave} />
+          <Container fluid className="p-0" style={{height:"8vh"}}>
+            <NavBar handleLeave={handleLeave} />
+          </Container>
           <Container fluid className="mt-2">
             <Row>
-              <Col lg={7} className="p-0 mb-3">
+              <Col lg={7} className="p-0 mb-3" style={{ height: "92vh" }}>
                 <Container className="mt-1">
                   <p className="text-center fs-5 mb-1 text-light">Editor</p>
-                  <Container style={{ backgroundColor: "#333", padding:"0", height:'77vh' }}>
+                  <Container
+                    style={{
+                      backgroundColor: "#333",
+                      padding: "0",
+                      height: "77vh",
+                    }}
+                  >
                     <QuillEditor />
                   </Container>
                 </Container>
@@ -126,7 +134,11 @@ const Room = () => {
                 <Container className="mt-2">
                   <Container
                     className="container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 text-light"
-                    style={{ height: "9vh", overflowY: "scroll", backgroundColor:'#333' }}
+                    style={{
+                      height: "9vh",
+                      overflowY: "scroll",
+                      backgroundColor: "#333",
+                    }}
                   >
                     <span>
                       <strong>Codellaborators:&nbsp;</strong>
@@ -143,7 +155,7 @@ const Room = () => {
                     readOnly={true}
                     theme={darcula}
                   />
-                  <InputGroup className="mb-1 w-100 mt-2" >
+                  <InputGroup className="mb-1 w-100 mt-2">
                     <InputGroup.Text id="inputGroup-sizing-default">
                       Input :
                     </InputGroup.Text>

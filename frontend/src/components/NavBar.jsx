@@ -8,7 +8,7 @@ import { FaSignOutAlt } from "react-icons/fa";
 const NavBar = (leaveRoom) => {
   const { user } = useUserContext();
   return (
-    <Container fluid className="m-0 p-0 ">
+    <Container fluid className="h-100 m-0 p-0 ">
       <Navbar className="bg-body-tertiary m-0 p-0">
         <Container fluid className="p-1" style={{backgroundColor:"#bbb"}}>
           <Container className="p-0 mx-3">
