@@ -94,7 +94,7 @@ const Room = () => {
   }, []);
 
   return (
-    <Container fluid className="vh-200 p-0 bg-dark">
+    <Container fluid className="p-0 bg-dark">
       {roomInfo ? (
         <Container fluid className="p-0">
           <NavBar handleLeave={handleLeave} />
