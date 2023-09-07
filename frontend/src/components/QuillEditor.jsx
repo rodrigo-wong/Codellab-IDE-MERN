@@ -70,6 +70,19 @@ const QuillEditor = () => {
     delayedUpdateRequest(code);
   }, [code]);
 
+  useEffect(()=>{
+    if(quill){
+    const syntaxButton = document.querySelector(".ql-code-block");
+    const buttonDescription = document.createElement('span');
+    buttonDescription.style.alignSelf = "center"
+    buttonDescription.innerText = " Highlight Syntax"
+    syntaxButton.append(buttonDescription);
+    syntaxButton.style.display = "flex"
+    syntaxButton.style.width ="100%";
+    syntaxButton.style.border = "1px solid black"
+    }
+  },[quill])
+
   const wrapperRef = useCallback(async (wrapper) => {
     if (wrapper === null) return;
     wrapper.innerHTML = "";
@@ -81,8 +94,6 @@ const QuillEditor = () => {
           highlight: (text) => hljs.highlight("python", text).value,
         },
         toolbar: [
-          [{ font: [] }],
-          [{ size: ["small", false, "large", "huge"] }],
           ["code-block"],
         ],
       },
