@@ -1,4 +1,4 @@
-# codellab-ide
+# Codellab-IDE
 A full stack web-based python IDE in which multiple users can create or join rooms to collaboratively work on the same editor.
 Tech stack: MongoDB, ExpressJS, NodeJS, React
 
