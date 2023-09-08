@@ -110,6 +110,8 @@ const QuillEditor = (data) => {
       ).then((res) => res.text());
 
       q.setText(fetchedCode);
+      setCode(fetchedCode);
+      console.log(fetchedCode);
     } catch (err) {
       console.log(err.message);
     }

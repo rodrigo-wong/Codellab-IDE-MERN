@@ -1,6 +1,6 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, memo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { darcula } from "@uiw/codemirror-themes-all";
 import {
@@ -266,4 +266,4 @@ const Room = () => {
   );
 };
 
-export default Room;
+export default memo(Room);
