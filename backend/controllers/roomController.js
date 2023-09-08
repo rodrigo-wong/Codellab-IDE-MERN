@@ -6,6 +6,7 @@ const {
   fetchCode,
   joinRoom,
   leaveRoom,
+  editPrivacy
 } = require("../services/roomServices");
 
 router
@@ -13,6 +14,7 @@ router
   .put("/codeUpdate", updateCode)
   .put("/join", joinRoom)
   .put("/leave", leaveRoom)
+  .put("/privacy", editPrivacy)
   .get("/fetchCode", fetchCode);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
+const { log } = require("console");
 
 dotenv.config();
 
@@ -38,6 +39,12 @@ io.on("connection", (socket) => {
     socket.to(data.roomId).emit("usersUpdate", data);
     console.log(socket.id, " joined ", data.roomId);
   });
+
+  socket.on("privacyUpdate", (data)=>{
+    console.log(data);
+    socket.to(data.roomId).emit("usersUpdate", data);
+  })
+
   socket.on("leaveRoom", async(data) => {
     const roomInfo = data.roomInfo;
     const fetch = await import("node-fetch");

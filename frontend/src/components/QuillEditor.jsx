@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import "react-quill/dist/quill.snow.css";
 import Quill from "quill";
 import socket from "../socket";
@@ -6,9 +6,9 @@ import { useUserContext } from "../context/UserContext";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 
-const QuillEditor = () => {
+const QuillEditor = (data) => {
   const [quill, setQuill] = useState(null);
-  const { roomInfo, user, code, setCode } = useUserContext();
+  const { roomInfo, user, code, setCode} = useUserContext();
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
 
   const updateCode = async (value) => {
@@ -70,18 +70,18 @@ const QuillEditor = () => {
     delayedUpdateRequest(code);
   }, [code]);
 
-  useEffect(()=>{
-    if(quill){
-    const syntaxButton = document.querySelector(".ql-code-block");
-    const buttonDescription = document.createElement('span');
-    buttonDescription.style.alignSelf = "center"
-    buttonDescription.innerText = " Highlight Syntax"
-    syntaxButton.append(buttonDescription);
-    syntaxButton.style.display = "flex"
-    syntaxButton.style.width ="100%";
-    syntaxButton.style.border = "1px solid black"
+  useEffect(() => {
+    if (quill) {
+      const syntaxButton = document.querySelector(".ql-code-block");
+      const buttonDescription = document.createElement("span");
+      buttonDescription.style.alignSelf = "center";
+      buttonDescription.innerText = " Highlight Syntax";
+      syntaxButton.append(buttonDescription);
+      syntaxButton.style.display = "flex";
+      syntaxButton.style.width = "100%";
+      syntaxButton.style.border = "1px solid black";
     }
-  },[quill])
+  }, [quill]);
 
   const wrapperRef = useCallback(async (wrapper) => {
     if (wrapper === null) return;
@@ -93,9 +93,7 @@ const QuillEditor = () => {
         syntax: {
           highlight: (text) => hljs.highlight("python", text).value,
         },
-        toolbar: [
-          ["code-block"],
-        ],
+        toolbar: [["code-block"]],
       },
       theme: "snow",
     });
@@ -117,9 +115,23 @@ const QuillEditor = () => {
     }
   }, []);
 
-  return (
-      <div className="editor" ref={wrapperRef}></div>
-  );
+  useEffect(() => {
+
+    if (quill) {
+      if (!data.admin) {
+        console.log("in disable");
+        if(roomInfo.editingPrivacy){
+        quill.enable();
+        } else {
+          quill.disable();
+        }
+      } else {
+        quill.enable();
+      }
+    }
+  }, [data.admin, roomInfo, quill]);
+
+  return <div className="editor" ref={wrapperRef}></div>;
 };
 
-export default QuillEditor;
+export default memo(QuillEditor);

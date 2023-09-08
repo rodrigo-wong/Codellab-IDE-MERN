@@ -23,7 +23,7 @@ export const UserContextProvider = ({ children }) => {
     roomInfo,
     setRoomInfo,
     currentCaret,
-    setCurrentCaret
+    setCurrentCaret,
   };
 
   return <UserContext.Provider value={values}>{children}</UserContext.Provider>;

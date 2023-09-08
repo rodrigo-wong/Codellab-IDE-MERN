@@ -97,4 +97,23 @@ const fetchCode = expressAsyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createRoom, updateCode, fetchCode, joinRoom, leaveRoom };
+const editPrivacy = expressAsyncHandler(async (req, res) => {
+  const { privacy, roomId } = req.body;
+  const room = await Room.findOneAndUpdate(
+    { roomId: roomId },
+    { editingPrivacy: privacy },
+    { new: true }
+  );
+  console.log("in editPrivacy");
+  if (room) res.status(200).json(room);
+  else res.status(400);
+});
+
+module.exports = {
+  createRoom,
+  updateCode,
+  fetchCode,
+  joinRoom,
+  leaveRoom,
+  editPrivacy,
+};

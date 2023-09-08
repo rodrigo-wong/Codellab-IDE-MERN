@@ -3,7 +3,16 @@ import { useUserContext } from "../context/UserContext";
 import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { darcula } from "@uiw/codemirror-themes-all";
-import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Row,
+  Col,
+  Form,
+  InputGroup,
+  Dropdown,
+  ButtonGroup,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
@@ -12,11 +21,13 @@ import socket from "../socket";
 import QuillEditor from "../components/QuillEditor";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code } = useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser, code} = useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const outputRef = useRef(null);
+  const [admin, setAdmin] = useState(false)
+  const [publicEdit, setPublicEdit] = useState(false);
   const navigate = useNavigate();
 
   const handleRun = () => {
@@ -46,6 +57,25 @@ const Room = () => {
     }
   };
 
+  const handleDropdown = async () => {
+    setPublicEdit(!publicEdit);
+    try {
+      const data = await fetch(`${process.env.REACT_APP_API_URL}/room/privacy`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          privacy: !publicEdit,
+          roomId: roomInfo.roomId,
+        }),
+      }).then(res => res.json());
+      socket.emit("privacyUpdate", data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   useEffect(() => {
     if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
@@ -69,8 +99,19 @@ const Room = () => {
   useEffect(() => {
     socket.on("usersUpdate", (newInfo) => {
       setRoomInfo(newInfo);
+      sessionStorage.setItem("roomInfo", JSON.stringify(newInfo));
     });
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      if (user.name === roomInfo.users[0]) {
+        setAdmin(true);
+      } else {
+        setAdmin(false);
+      }
+    }
+  }, [roomInfo,admin]);
 
   useEffect(() => {
     if (outputRef.current !== null) {
@@ -97,14 +138,47 @@ const Room = () => {
     <Container fluid className="p-0 bg-dark">
       {roomInfo ? (
         <Container fluid className="p-0">
-          <Container fluid className="p-0" style={{height:"8vh"}}>
+          <Container fluid className="p-0" style={{ height: "8vh" }}>
             <NavBar handleLeave={handleLeave} />
           </Container>
           <Container fluid className="mt-2">
             <Row>
               <Col lg={7} className="p-0 mb-3" style={{ height: "92vh" }}>
-                <Container className="mt-1">
-                  <p className="text-center fs-5 mb-1 text-light">Editor</p>
+                <Container className="text-center mt-1">
+                  <Container className="d-flex justify-content-center">
+                    <div className="d-flex mb-2">
+                      <div className="fs-5 text-light">Editor&nbsp;</div>
+                      {admin ? (
+                        <div>
+                          <Dropdown as={ButtonGroup} size="sm">
+                            <Button variant="secondary">Editing rights:</Button>
+                            <Dropdown.Toggle
+                              split
+                              variant="secondary"
+                              id="dropdown-split-basic"
+                            />
+
+                            <Dropdown.Menu>
+                              <Dropdown.Item
+                                onClick={handleDropdown}
+                                active={publicEdit ? false : true}
+                              >
+                                Private
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={handleDropdown}
+                                active={publicEdit ? true : false}
+                              >
+                                Public
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </Container>
                   <Container
                     style={{
                       backgroundColor: "#333",
@@ -112,7 +186,7 @@ const Room = () => {
                       height: "77vh",
                     }}
                   >
-                    <QuillEditor />
+                    <QuillEditor admin={admin} />
                   </Container>
                 </Container>
                 <Container className="d-flex justify-content-center mt-3">
@@ -144,7 +218,9 @@ const Room = () => {
                       <strong>Codellaborators:&nbsp;</strong>
                     </span>
                     {roomInfo.users.map((user, index) => (
-                      <span key={index}>{user} ; &nbsp;</span>
+                      <span key={index}>
+                        {index == 0 ? user + " (Admin)" : user} ; &nbsp;
+                      </span>
                     ))}
                   </Container>
                   <p className="text-center text-light my-1 fs-5">Shell</p>

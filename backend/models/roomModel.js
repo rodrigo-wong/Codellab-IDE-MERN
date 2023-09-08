@@ -14,6 +14,10 @@ const roomSchema = mongoose.Schema({
       type: String,
     },
   ],
+  editingPrivacy: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Room = mongoose.model("Room", roomSchema);
