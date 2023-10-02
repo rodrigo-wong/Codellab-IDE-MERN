@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("privacyUpdate", (data)=>{
-    console.log(data);
+    //console.log(data);
     socket.to(data.roomId).emit("usersUpdate", data);
   })
 

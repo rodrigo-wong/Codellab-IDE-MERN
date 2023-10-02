@@ -1,24 +1,30 @@
+const { Timestamp } = require("mongodb");
 const mongoose = require("mongoose");
 
-const roomSchema = mongoose.Schema({
-  roomId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  code: {
-    type: String,
-  },
-  users: [
-    {
+const roomSchema = mongoose.Schema(
+  {
+    roomId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    code: {
       type: String,
     },
-  ],
-  editingPrivacy: {
-    type: Boolean,
-    default: false
+    users: [
+      {
+        type: String,
+      },
+    ],
+    editingPrivacy: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
   }
-});
+);
 
 const Room = mongoose.model("Room", roomSchema);
 
