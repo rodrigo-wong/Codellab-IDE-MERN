@@ -5,7 +5,8 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
-const { log } = require("console");
+const cron = require('node-cron');
+const Room = require("../models/roomModel");
 
 dotenv.config();
 
@@ -22,6 +23,18 @@ app.use("/room", roomController);
 
 const PORT = process.env.PORT;
 const server = app.listen(PORT, console.log(`Server live in ${PORT}`));
+
+cron.schedule('0 * * * *', async () => {
+  const threshold = new Date();
+  threshold.setHours(threshold.getHours() - 48);
+
+  try {
+    const result = await Room.deleteMany({ updatedAt: { $lt: threshold } });
+  } catch (error) {
+    console.error('Error deleting room:', error);
+  }
+});
+
 
 const io = socketIO(server, {
   pingtTimeout: 60000,
