@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 const roomController = require("./controllers/roomController");
 const { spawn } = require("child_process");
 const cron = require('node-cron');
-const Room = require("../models/roomModel");
+const Room = require("./models/roomModel");
 
 dotenv.config();
 
