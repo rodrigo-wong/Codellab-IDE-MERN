@@ -3,6 +3,7 @@ import { useUserContext } from "../context/UserContext";
 import { useEffect, useState, useRef, memo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { darcula } from "@uiw/codemirror-themes-all";
+import CodeEditor from "../components/CodeEditor";
 import {
   Button,
   Container,
@@ -18,7 +19,6 @@ import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
 import socket from "../socket";
-import QuillEditor from "../components/QuillEditor";
 
 const Room = () => {
   const { user, roomInfo, setRoomInfo, setUser, code} = useUserContext();
@@ -57,8 +57,8 @@ const Room = () => {
     }
   };
 
-  const handleDropdown = async () => {
-    setPublicEdit(!publicEdit);
+  const handleDropdownPublic = async () => {
+    setPublicEdit(false);
     try {
       const data = await fetch(`${process.env.REACT_APP_API_URL}/room/privacy`, {
         method: "PUT",
@@ -66,7 +66,7 @@ const Room = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          privacy: !publicEdit,
+          privacy: false,
           roomId: roomInfo.roomId,
         }),
       }).then(res => res.json());
@@ -75,6 +75,25 @@ const Room = () => {
       console.log(err.message);
     }
   };
+
+  const handleDropdownPrivate = async () => {
+    setPublicEdit(true);
+    try {
+      const data = await fetch(`${process.env.REACT_APP_API_URL}/room/privacy`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          privacy: true,
+          roomId: roomInfo.roomId,
+        }),
+      }).then(res => res.json());
+      socket.emit("privacyUpdate", data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
 
   useEffect(() => {
     if (roomInfo && user) {
@@ -127,15 +146,10 @@ const Room = () => {
     };
     window.addEventListener("beforeunload", handleLeave);
     window.addEventListener("popstate", handlePopState);
-
-    //return () => {
-    //window.removeEventListener("beforeunload", handleLeave);
-    //window.removeEventListener("popstate", handlePopState);
-    //};
   }, []);
 
   return (
-    <Container fluid className="p-0 bg-dark">
+    <Container fluid className="p-0" style={{backgroundColor:"#222"}}>
       {roomInfo ? (
         <Container fluid className="p-0">
           <Container fluid className="p-0" style={{ height: "8vh" }}>
@@ -143,8 +157,8 @@ const Room = () => {
           </Container>
           <Container fluid className="mt-2">
             <Row>
-              <Col lg={7} className="p-0 mb-3" style={{ height: "92vh" }}>
-                <Container className="text-center mt-1">
+              <Col lg={6} className="p-0 mb-3" style={{ height: "92vh"}}>
+                <Container className="text-center mt-1" style={{marginLeft:"5%"}}>
                   <Container className="d-flex justify-content-center">
                     <div className="d-flex mb-2">
                       <div className="fs-5 text-light">Editor&nbsp;</div>
@@ -160,14 +174,14 @@ const Room = () => {
 
                             <Dropdown.Menu>
                               <Dropdown.Item
-                                onClick={handleDropdown}
-                                active={publicEdit ? false : true}
+                                onClick={handleDropdownPrivate}
+                                active={publicEdit ? true : false}
                               >
                                 Private
                               </Dropdown.Item>
                               <Dropdown.Item
-                                onClick={handleDropdown}
-                                active={publicEdit ? true : false}
+                                onClick={handleDropdownPublic}
+                                active={publicEdit ? false : true}
                               >
                                 Public
                               </Dropdown.Item>
@@ -183,10 +197,11 @@ const Room = () => {
                     style={{
                       backgroundColor: "#333",
                       padding: "0",
+                      width: "100%",
                       height: "77vh",
                     }}
                   >
-                    <QuillEditor admin={admin} />
+                    <CodeEditor admin={admin} />
                   </Container>
                 </Container>
                 <Container className="d-flex justify-content-center mt-3">
@@ -204,8 +219,8 @@ const Room = () => {
                 </Container>
               </Col>
 
-              <Col lg={5} className="p-0">
-                <Container className="mt-2">
+              <Col lg={6} className="p-0">
+                <Container className="mt-2" style={{width:"90%"}}>
                   <Container
                     className="container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 text-light"
                     style={{

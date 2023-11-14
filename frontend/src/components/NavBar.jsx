@@ -10,10 +10,10 @@ const NavBar = (leaveRoom) => {
   return (
     <Container fluid className="h-100 m-0 p-0 ">
       <Navbar className="bg-body-tertiary m-0 p-0">
-        <Container fluid className="p-1" style={{backgroundColor:"#bbb"}}>
+        <Container fluid className="p-1" style={{backgroundColor:"#777"}}>
           <Container className="p-0 mx-3">
             <Container className="d-flex align-items-center">
-              <Navbar.Text className="fs-3"  style={{color:"black"}}>Room#: {user.room}</Navbar.Text>
+              <Navbar.Text className="fs-3"  style={{color:"white"}}>Room#: {user.room}</Navbar.Text>
               <Button
                 className="btn-danger ms-4"
                 onClick={leaveRoom.handleLeave}
@@ -24,7 +24,7 @@ const NavBar = (leaveRoom) => {
             </Container>
           </Container>
           <Navbar.Collapse className="justify-content-end mx-3">
-            <Navbar.Text className="m-0 p-0" style={{color:"black"}}>
+            <Navbar.Text className="m-0 p-0" style={{color:"white"}}>
               Signed in as: {user.name}
             </Navbar.Text>
           </Navbar.Collapse>
