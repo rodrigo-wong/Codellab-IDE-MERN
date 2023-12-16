@@ -4,15 +4,19 @@ import { useUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Spinner from 'react-bootstrap/Spinner';
 
 const CreateRoom = () => {
   const navigate = useNavigate();
   const { setUser, setRoomInfo } = useUserContext();
   const [name, setName] = useState("");
-  const [room, setRoom] = useState("")
+  const [room, setRoom] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const createRoom = async () => {
+
     if (name && room) {
+      setLoading(true);
       try {
         const data = await fetch(`${process.env.REACT_APP_API_URL}/room/create`, {
           method: "POST",
@@ -32,6 +36,7 @@ const CreateRoom = () => {
         sessionStorage.setItem("user", JSON.stringify({ name: name, room: room }));
         setUser({ name: name, room: room });
         setRoomInfo(response);
+        setLoading(false);
         navigate(`/room/${room}`);
       } catch (err) {
         //console.log(err.message);
@@ -92,6 +97,14 @@ const CreateRoom = () => {
           </Button>
         </Container>
       </Form>
+       {loading? 
+       <div className="position-fixed top-50 start-50 translate-middle text-center">
+        <Spinner  animation="border" variant="warning" />
+        <p className="text-primary fs-4">Loading</p>
+       </div>
+       
+       : 
+       ""}
     </Container>
   );
 };

@@ -21,13 +21,14 @@ import ChatBox from "../components/ChatBox";
 import socket from "../socket";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code} = useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser, code } = useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const outputRef = useRef(null);
-  const [admin, setAdmin] = useState(false)
+  const [admin, setAdmin] = useState(false);
   const [publicEdit, setPublicEdit] = useState(false);
+  const [fontSize, setFontSize] = useState("16")
   const navigate = useNavigate();
 
   const handleRun = () => {
@@ -60,16 +61,19 @@ const Room = () => {
   const handleDropdownPublic = async () => {
     setPublicEdit(false);
     try {
-      const data = await fetch(`${process.env.REACT_APP_API_URL}/room/privacy`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          privacy: false,
-          roomId: roomInfo.roomId,
-        }),
-      }).then(res => res.json());
+      const data = await fetch(
+        `${process.env.REACT_APP_API_URL}/room/privacy`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            privacy: false,
+            roomId: roomInfo.roomId,
+          }),
+        }
+      ).then((res) => res.json());
       socket.emit("privacyUpdate", data);
     } catch (err) {
       console.log(err.message);
@@ -79,21 +83,24 @@ const Room = () => {
   const handleDropdownPrivate = async () => {
     setPublicEdit(true);
     try {
-      const data = await fetch(`${process.env.REACT_APP_API_URL}/room/privacy`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          privacy: true,
-          roomId: roomInfo.roomId,
-        }),
-      }).then(res => res.json());
+      const data = await fetch(
+        `${process.env.REACT_APP_API_URL}/room/privacy`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            privacy: true,
+            roomId: roomInfo.roomId,
+          }),
+        }
+      ).then((res) => res.json());
       socket.emit("privacyUpdate", data);
     } catch (err) {
       console.log(err.message);
     }
-  }
+  };
 
   useEffect(() => {
     if (roomInfo && user) {
@@ -130,7 +137,7 @@ const Room = () => {
         setAdmin(false);
       }
     }
-  }, [roomInfo,admin]);
+  }, [roomInfo, admin]);
 
   useEffect(() => {
     if (outputRef.current !== null) {
@@ -149,7 +156,7 @@ const Room = () => {
   }, []);
 
   return (
-    <Container fluid className="p-0" style={{backgroundColor:"#222"}}>
+    <Container fluid className="p-0" style={{ backgroundColor: "#222" }}>
       {roomInfo ? (
         <Container fluid className="p-0">
           <Container fluid className="p-0" style={{ height: "8vh" }}>
@@ -157,11 +164,14 @@ const Room = () => {
           </Container>
           <Container fluid className="mt-2">
             <Row>
-              <Col lg={6} className="p-0 mb-3" style={{ height: "92vh"}}>
-                <Container className="text-center mt-1" style={{marginLeft:"5%"}}>
+              <Col lg={6} className="p-0 mb-3" style={{ height: "92vh" }}>
+                <Container
+                  className="text-center mt-1"
+                  style={{ marginLeft: "5%" }}
+                >
                   <Container className="d-flex justify-content-center">
                     <div className="d-flex mb-2">
-                      <div className="fs-5 text-light">Editor&nbsp;</div>
+                      <div className="fs-5 text-light">Editor: &nbsp;</div>
                       {admin ? (
                         <div>
                           <Dropdown as={ButtonGroup} size="sm">
@@ -192,6 +202,19 @@ const Room = () => {
                         ""
                       )}
                     </div>
+                    <Dropdown className={admin? "ms-2": ""} onSelect={(size)=> setFontSize(size)}>
+                      <Dropdown.Toggle variant="secondary" id="dropdown-basic" size="sm">
+                        Font Size: {fontSize}
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        {["10", "12", "14", "16", "18", "20", "22"].map((fontSize) => (
+                          <Dropdown.Item key={fontSize} eventKey={fontSize}>
+                            {fontSize}
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </Container>
                   <Container
                     style={{
@@ -199,6 +222,8 @@ const Room = () => {
                       padding: "0",
                       width: "100%",
                       height: "77vh",
+                      textAlign: "left",
+                      fontSize: `${fontSize}px`,
                     }}
                   >
                     <CodeEditor admin={admin} />
@@ -220,7 +245,7 @@ const Room = () => {
               </Col>
 
               <Col lg={6} className="p-0">
-                <Container className="mt-2" style={{width:"90%"}}>
+                <Container className="mt-2" style={{ width: "90%" }}>
                   <Container
                     className="container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 text-light"
                     style={{

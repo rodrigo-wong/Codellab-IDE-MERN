@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/theme-monokai";
+import CodeMirror from "@uiw/react-codemirror";
+import { darcula } from "@uiw/codemirror-themes-all";
+import { loadLanguage } from '@uiw/codemirror-extensions-langs';
 import socket from "../socket";
 import { useUserContext } from "../context/UserContext";
 
@@ -89,19 +89,13 @@ const CodeEditor = (data) => {
   }, [data.admin, roomInfo]);
 
   return (
-    <AceEditor
-      mode="python"
-      theme="monokai"
-      name="editor"
-      value={code}
-      fontSize={14}
-      editorProps={{ $blockScrolling: true }}
-      onChange={handleCodeChange}
-      readOnly={readOnly}
-      width="100%" // Optional: Set width directly in the component
-      height="77vh" // Optional: Set height directly in the component
-      style= {{border:'1px solid #888'}}
-    />
+    <CodeMirror
+    height="77vh"
+    value={code}
+    theme={darcula}
+    onChange = {handleCodeChange}
+    extensions={loadLanguage('python')}
+  />
   );
 };
 
