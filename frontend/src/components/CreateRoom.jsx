@@ -14,9 +14,8 @@ const CreateRoom = () => {
   const [loading, setLoading] = useState(false);
 
   const createRoom = async () => {
-
+    setLoading(true);
     if (name && room) {
-      setLoading(true);
       try {
         const data = await fetch(`${process.env.REACT_APP_API_URL}/room/create`, {
           method: "POST",
@@ -36,7 +35,6 @@ const CreateRoom = () => {
         sessionStorage.setItem("user", JSON.stringify({ name: name, room: room }));
         setUser({ name: name, room: room });
         setRoomInfo(response);
-        setLoading(false);
         navigate(`/room/${room}`);
       } catch (err) {
         //console.log(err.message);
@@ -51,6 +49,7 @@ const CreateRoom = () => {
           theme: "light",
         });
       }
+      setLoading(false);
     } else {
       toast.warn("Please fill all required fields", {
         position: "bottom-center",
