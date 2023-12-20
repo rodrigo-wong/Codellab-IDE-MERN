@@ -45,10 +45,7 @@ const CreateRoom = () => {
         );
         setUser({ name: name, room: room });
         setRoomInfo(response);
-        setTimeout(() => {
-          navigate(`/room/${room}`);
-        }, 6000);
-
+        navigate(`/room/${room}`);
       } catch (err) {
         //console.log(err.message);
         toast.error(err.message, {
