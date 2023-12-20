@@ -93,6 +93,7 @@ const CodeEditor = (data) => {
         height="77vh"
         value={code}
         theme={darkMode? darcula : bbedit }
+        readOnly={readOnly? true : false}
         onChange={handleCodeChange}
         extensions={loadLanguage("python")}
       />

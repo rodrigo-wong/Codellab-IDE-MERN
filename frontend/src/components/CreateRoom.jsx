@@ -49,7 +49,6 @@ const CreateRoom = () => {
           theme: "light",
         });
       }
-      setLoading(false);
     } else {
       toast.warn("Please fill all required fields", {
         position: "bottom-center",
@@ -62,6 +61,7 @@ const CreateRoom = () => {
         theme: "light",
       });
     }
+    setLoading(false);
   };
 
   const handleSubmit = async (e) => {
