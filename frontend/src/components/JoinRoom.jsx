@@ -7,7 +7,7 @@ import {toast} from 'react-toastify';
 
 const JoinRoom = () => {
   const navigate = useNavigate();
-  const { setUser, setRoomInfo } = useUserContext();
+  const { setUser, setRoomInfo, darkMode } = useUserContext();
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
 
@@ -75,7 +75,7 @@ const JoinRoom = () => {
           controlId="name"
           onChange={(e) => setName(e.target.value)}
         >
-          <Form.Label className="text-light">Name</Form.Label>
+          <Form.Label className={darkMode? "text-light" : "text-dark"}>Name</Form.Label>
           <Form.Control type="text" placeholder="Enter Name" />
         </Form.Group>
 
@@ -84,7 +84,7 @@ const JoinRoom = () => {
           controlId="roomNumber"
           onChange={(e) => setRoom(e.target.value)}
         >
-          <Form.Label className="text-light">Room ID</Form.Label>
+          <Form.Label className={darkMode? "text-light" : "text-dark"}>Room ID</Form.Label>
           <Form.Control type="text" placeholder="Enter Room#" />
         </Form.Group>
 
