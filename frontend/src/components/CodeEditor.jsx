@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { darcula } from "@uiw/codemirror-themes-all";
-import { loadLanguage } from '@uiw/codemirror-extensions-langs';
+import { bbedit, darcula } from "@uiw/codemirror-themes-all";
+import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import socket from "../socket";
 import { useUserContext } from "../context/UserContext";
 
 const CodeEditor = (data) => {
-  const { roomInfo, user, code, setCode } = useUserContext();
+  const { roomInfo, user, code, setCode, darkMode, colorScheme} = useUserContext();
   const [readOnly, setReadOnly] = useState(false);
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
 
   const fetchedCode = async () => {
-      try{
-        const dbCode = await fetch(
+    try {
+      const dbCode = await fetch(
         `${process.env.REACT_APP_API_URL}/room/fetchCode?roomId=${user.room}`,
         {
           method: "GET",
@@ -23,10 +23,9 @@ const CodeEditor = (data) => {
       ).then((res) => res.text());
 
       setCode(dbCode);
-      } catch(err) {
-        console.log(err.message);
-      }
-
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   const updateCode = async (value) => {
@@ -64,9 +63,9 @@ const CodeEditor = (data) => {
     );
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchedCode();
-  },[])
+  }, []);
 
   useEffect(() => {
     delayedUpdateRequest(code);
@@ -89,13 +88,15 @@ const CodeEditor = (data) => {
   }, [data.admin, roomInfo]);
 
   return (
-    <CodeMirror
-    height="77vh"
-    value={code}
-    theme={darcula}
-    onChange = {handleCodeChange}
-    extensions={loadLanguage('python')}
-  />
+    <div className="border border-1 border-secondary">
+      <CodeMirror
+        height="77vh"
+        value={code}
+        theme={darkMode? darcula : bbedit }
+        onChange={handleCodeChange}
+        extensions={loadLanguage("python")}
+      />
+    </div>
   );
 };
 

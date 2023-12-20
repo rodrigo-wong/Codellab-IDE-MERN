@@ -14,6 +14,8 @@ export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [roomInfo, setRoomInfo] = useState();
   const [currentCaret, setCurrentCaret] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
+  const [colorScheme, setColorScheme] = useState({backgroundColor:" bg-light", textColor:" text-dark"});
 
   const values = {
     code,
@@ -24,6 +26,10 @@ export const UserContextProvider = ({ children }) => {
     setRoomInfo,
     currentCaret,
     setCurrentCaret,
+    setDarkMode,
+    darkMode,
+    colorScheme,
+    setColorScheme
   };
 
   return <UserContext.Provider value={values}>{children}</UserContext.Provider>;

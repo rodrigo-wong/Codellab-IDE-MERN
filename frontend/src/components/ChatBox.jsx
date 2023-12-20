@@ -9,7 +9,7 @@ const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
-  const { user } = useUserContext();
+  const { user, colorScheme } = useUserContext();
 
   const handleSendMessage = () => {
     setMessages([...messages, { sender: user.name, message: newMessage }]);
@@ -37,7 +37,7 @@ const ChatBox = () => {
 
   return (
     <Row>
-      <Col className="border border-2 border-secondary p-0 text-light " style={{backgroundColor:'#333'}}>
+      <Col className={"border border-1 border-secondary p-0 " + colorScheme.backgroundColor + colorScheme.textColor}>
         <Container style={{ height: "18vh", overflowY: "auto" }} ref={chatContainerRef}>
           {messages.map((message, index) => (
             <div key={index} className="message">

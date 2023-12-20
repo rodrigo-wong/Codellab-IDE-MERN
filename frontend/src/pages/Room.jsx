@@ -2,7 +2,7 @@ import React from "react";
 import { useUserContext } from "../context/UserContext";
 import { useEffect, useState, useRef, memo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { darcula } from "@uiw/codemirror-themes-all";
+import { bbedit, darcula } from "@uiw/codemirror-themes-all";
 import CodeEditor from "../components/CodeEditor";
 import {
   Button,
@@ -21,14 +21,14 @@ import ChatBox from "../components/ChatBox";
 import socket from "../socket";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code } = useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser, code, darkMode, colorScheme } = useUserContext();
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const outputRef = useRef(null);
   const [admin, setAdmin] = useState(false);
   const [publicEdit, setPublicEdit] = useState(false);
-  const [fontSize, setFontSize] = useState("16")
+  const [fontSize, setFontSize] = useState("16");
   const navigate = useNavigate();
 
   const handleRun = () => {
@@ -156,7 +156,7 @@ const Room = () => {
   }, []);
 
   return (
-    <Container fluid className="p-0" style={{ backgroundColor: "#222" }}>
+    <Container fluid className={"p-0 " + colorScheme.backgroundColor}>
       {roomInfo ? (
         <Container fluid className="p-0">
           <Container fluid className="p-0" style={{ height: "8vh" }}>
@@ -171,7 +171,7 @@ const Room = () => {
                 >
                   <Container className="d-flex justify-content-center">
                     <div className="d-flex mb-2">
-                      <div className="fs-5 text-light">Editor: &nbsp;</div>
+                      <div className={"fs-5 " + colorScheme.textColor}>Editor: &nbsp;</div>
                       {admin ? (
                         <div>
                           <Dropdown as={ButtonGroup} size="sm">
@@ -202,23 +202,31 @@ const Room = () => {
                         ""
                       )}
                     </div>
-                    <Dropdown className={admin? "ms-2": ""} onSelect={(size)=> setFontSize(size)}>
-                      <Dropdown.Toggle variant="secondary" id="dropdown-basic" size="sm">
+                    <Dropdown
+                      className={admin ? "ms-2" : ""}
+                      onSelect={(size) => setFontSize(size)}
+                    >
+                      <Dropdown.Toggle
+                        variant="secondary"
+                        id="dropdown-basic"
+                        size="sm"
+                      >
                         Font Size: {fontSize}
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu>
-                        {["10", "12", "14", "16", "18", "20", "22"].map((fontSize) => (
-                          <Dropdown.Item key={fontSize} eventKey={fontSize}>
-                            {fontSize}
-                          </Dropdown.Item>
-                        ))}
+                        {["10", "12", "14", "16", "18", "20", "22"].map(
+                          (fontSize) => (
+                            <Dropdown.Item key={fontSize} eventKey={fontSize}>
+                              {fontSize}
+                            </Dropdown.Item>
+                          )
+                        )}
                       </Dropdown.Menu>
                     </Dropdown>
                   </Container>
                   <Container
                     style={{
-                      backgroundColor: "#333",
                       padding: "0",
                       width: "100%",
                       height: "77vh",
@@ -247,11 +255,10 @@ const Room = () => {
               <Col lg={6} className="p-0">
                 <Container className="mt-2" style={{ width: "90%" }}>
                   <Container
-                    className="container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 text-light"
+                    className={"container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 " + colorScheme.backgroundColor + colorScheme.textColor}
                     style={{
                       height: "9vh",
                       overflowY: "scroll",
-                      backgroundColor: "#333",
                     }}
                   >
                     <span>
@@ -263,14 +270,16 @@ const Room = () => {
                       </span>
                     ))}
                   </Container>
-                  <p className="text-center text-light my-1 fs-5">Shell</p>
-                  <CodeMirror
-                    ref={outputRef}
-                    height="40vh"
-                    value={output}
-                    readOnly={true}
-                    theme={darcula}
-                  />
+                  <p className={"text-center my-1 fs-5 " + colorScheme.textColor}>Shell</p>
+                  <div className="border border-1 border-secondary">
+                    <CodeMirror
+                      ref={outputRef}
+                      height="40vh"
+                      value={output}
+                      theme={darkMode ? darcula :bbedit}
+                      readOnly={true}
+                    />
+                  </div>
                   <InputGroup className="mb-1 w-100 mt-2">
                     <InputGroup.Text id="inputGroup-sizing-default">
                       Input :
@@ -291,7 +300,7 @@ const Room = () => {
                     />
                   </InputGroup>
                   <Container fluid className="mb-3">
-                    <p className="fs-5 text-center text-light m-1">Chat</p>
+                    <p className={"fs-5 text-center m-1 " + colorScheme.textColor}>Chat</p>
                     <ChatBox />
                   </Container>
                 </Container>
