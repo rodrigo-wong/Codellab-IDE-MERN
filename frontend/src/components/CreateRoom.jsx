@@ -4,7 +4,7 @@ import { useUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
 
 const CreateRoom = () => {
   const navigate = useNavigate();
@@ -12,33 +12,44 @@ const CreateRoom = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isServerIdle, setIsServerIdle] = useState(false);
 
   const createRoom = async () => {
     setLoading(true);
+    setTimeout(() => {
+      setIsServerIdle(true);
+    }, 3000);
     if (name && room) {
       try {
-        const data = await fetch(`${process.env.REACT_APP_API_URL}/room/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            roomId: room,
-            name: name,
-          }),
-        });
+        const data = await fetch(
+          `${process.env.REACT_APP_API_URL}/room/create`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              roomId: room,
+              name: name,
+            }),
+          }
+        );
         if (data.status === 401) {
           throw new Error("This room already exist");
         }
         const response = await data.json();
         sessionStorage.setItem("roomInfo", JSON.stringify(response));
-        sessionStorage.setItem("user", JSON.stringify({ name: name, room: room }));
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({ name: name, room: room })
+        );
         setUser({ name: name, room: room });
         setRoomInfo(response);
+
         navigate(`/room/${room}`);
       } catch (err) {
         //console.log(err.message);
-        toast.error(err.message,  {
+        toast.error(err.message, {
           position: "bottom-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -70,7 +81,7 @@ const CreateRoom = () => {
   };
 
   return (
-    <Container fluid >
+    <Container fluid>
       <Form>
         <Form.Group
           className="mb-3"
@@ -96,14 +107,23 @@ const CreateRoom = () => {
           </Button>
         </Container>
       </Form>
-       {loading? 
-       <div className="position-fixed top-50 start-50 translate-middle text-center">
-        <Spinner  animation="border" variant="warning" />
-        <p className="text-primary fs-4">Loading...<br></br><span className="fs-5">Rebooting the server, this may take 1-2 minutes</span></p>
-       </div>
-       
-       : 
-       ""}
+      {loading ? (
+        <div className="position-fixed top-50 start-50 translate-middle text-center">
+          <Spinner animation="border" variant="warning" />
+          <p className="text-primary fs-4">
+            Loading...<br></br>
+            {isServerIdle ? (
+              <span className="fs-5">
+                Rebooting the server, this may take 1-2 minutes
+              </span>
+            ) : (
+              ""
+            )}
+          </p>
+        </div>
+      ) : (
+        ""
+      )}
     </Container>
   );
 };
