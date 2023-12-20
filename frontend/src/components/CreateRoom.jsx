@@ -99,7 +99,7 @@ const CreateRoom = () => {
        {loading? 
        <div className="position-fixed top-50 start-50 translate-middle text-center">
         <Spinner  animation="border" variant="warning" />
-        <p className="text-primary fs-4">Loading</p>
+        <p className="text-primary fs-4">Loading...<br></br><span className="fs-5">Rebooting the server, this may take 1-2 minutes</span></p>
        </div>
        
        : 
