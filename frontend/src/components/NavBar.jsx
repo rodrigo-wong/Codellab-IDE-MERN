@@ -5,9 +5,10 @@ import { Button } from "react-bootstrap";
 import { useUserContext } from "../context/UserContext";
 import { FaSignOutAlt } from "react-icons/fa";
 import ThemeSwitch from "./ThemeSwitch";
+import BotChatboxModal from "../modals/BotChatboxModal";
 
 const NavBar = (leaveRoom) => {
-  const { user, darkMode, setDarkMode, setColorScheme,colorScheme} = useUserContext();
+  const { user } = useUserContext();
   return (
     <Container fluid className="h-100 m-0 p-0 ">
       <Navbar className="bg-body-tertiary m-0 p-0">
@@ -18,12 +19,13 @@ const NavBar = (leaveRoom) => {
                 Room#: {user.room}
               </Navbar.Text>
               <Button
-                className="btn-danger ms-4"
+                className="btn-danger ms-4 me-4"
                 onClick={leaveRoom.handleLeave}
               >
                 Leave room
                 <FaSignOutAlt className="logout-icon ms-2" />
               </Button>
+              <BotChatboxModal/>
             </Container>
           </Container>
           <Navbar.Collapse className="mx-3 text-white">

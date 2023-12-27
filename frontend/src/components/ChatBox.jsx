@@ -26,7 +26,7 @@ const ChatBox = () => {
         ]);
       });
     }
-  }, [messages]);
+  }, [messages,user]);
 
   useEffect(()=>{
     if (chatContainerRef.current) {
