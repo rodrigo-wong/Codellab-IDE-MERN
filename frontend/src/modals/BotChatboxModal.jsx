@@ -75,19 +75,19 @@ const BotChatboxModal = () => {
           >
             {messages.map((message, index) => (
               <div key={index} className="message">
-                <span
-                  className={
-                    message.sender === "Helper Bot"
-                      ? "text-primary"
-                      : "text-warning"
-                  }
-                  style={{ fontWeight: "700" }}
-                >
-                  {message.sender}:{" "}
-                </span>
-                <span style={{ whiteSpace: "pre-wrap" }}>
-                  <pre>{message.message}</pre>
-                </span>
+                <pre style={{ whiteSpace: "pre-wrap", tabSize: 4 }}>
+                  <span
+                    className={
+                      message.sender === "Helper Bot"
+                        ? "text-primary"
+                        : "text-warning"
+                    }
+                    style={{ fontWeight: "700" }}
+                  >
+                    {message.sender}:
+                  </span>
+                  <span>{message.message}</span>
+                </pre>
               </div>
             ))}
           </div>
