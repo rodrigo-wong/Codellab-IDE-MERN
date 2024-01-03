@@ -6,7 +6,12 @@ import { useUserContext } from "../context/UserContext";
 const BotChatboxModal = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, colorScheme } = useUserContext();
-  const [messages, setMessages] = useState([{sender: "Helper Bot", message:`Hi ${user.name}, you can ask me basic python related question or type /help to see what I can do for you?`}])
+  const [messages, setMessages] = useState([
+    {
+      sender: "Helper Bot",
+      message: `Hi ${user.name}, you can ask me basic python related question or type /help to see what I can do for you?`,
+    },
+  ]);
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
 
@@ -19,41 +24,38 @@ const BotChatboxModal = () => {
       { sender: user.name, message: newMessage },
       { sender: "Helper Bot", message: "" },
     ];
-  
+
     try {
-      const data = await fetch(
-        `${process.env.REACT_APP_CHATBOT_URL}/predict`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: newMessage,
-          }),
-        }
-      ).then((res) => res.json());
-  
+      const data = await fetch(`${process.env.REACT_APP_CHATBOT_URL}/predict`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: newMessage,
+        }),
+      }).then((res) => res.json());
+
       newMessages[newMessages.length - 1].message = data.answer;
     } catch (err) {
       console.log(err);
     }
-  
+
     setMessages(newMessages);
     setNewMessage("");
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (chatContainerRef.current) {
       const { scrollHeight, clientHeight } = chatContainerRef.current;
       chatContainerRef.current.scrollTop = scrollHeight - clientHeight;
     }
-  },[messages])
+  }, [messages]);
 
   return (
     <>
       <Button variant="warning" onClick={handleShow}>
-      🤖 AI Help Chat
+        🤖 AI Help Chat
       </Button>
 
       <Modal
@@ -64,36 +66,47 @@ const BotChatboxModal = () => {
         <Modal.Header closeButton>
           <Modal.Title> 🤖 Python AI Helper</Modal.Title>
         </Modal.Header>
-        <Modal.Body className={colorScheme.backgroundColor + colorScheme.textColor}>
+        <Modal.Body
+          className={colorScheme.backgroundColor + colorScheme.textColor}
+        >
           <div
             style={{ height: "300px", overflowY: "auto", padding: "10px" }}
             ref={chatContainerRef}
           >
             {messages.map((message, index) => (
               <div key={index} className="message">
-                <span className={message.sender === "Helper Bot" ? "text-primary" : "text-warning"} style={{ fontWeight: "700" }}>
+                <span
+                  className={
+                    message.sender === "Helper Bot"
+                      ? "text-primary"
+                      : "text-warning"
+                  }
+                  style={{ fontWeight: "700" }}
+                >
                   {message.sender}:{" "}
                 </span>
-                <span>{message.message}</span>
+                <span style={{ whiteSpace: "pre-line" }}>
+                  {message.message}
+                </span>
               </div>
             ))}
           </div>
           <InputGroup className="mt-2 ">
-          <Form.Control
-            value={newMessage}
-            placeholder="Type your message here"
-            aria-describedby="basic-addon2"
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
-          />
-          <Button variant="primary" onClick={handleSendMessage}>
-            Send
-          </Button>
-        </InputGroup>
+            <Form.Control
+              value={newMessage}
+              placeholder="Type your message here"
+              aria-describedby="basic-addon2"
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+            />
+            <Button variant="primary" onClick={handleSendMessage}>
+              Send
+            </Button>
+          </InputGroup>
         </Modal.Body>
       </Modal>
     </>
