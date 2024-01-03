@@ -17,7 +17,7 @@ const BotChatboxModal = () => {
     const newMessages = [
       ...messages,
       { sender: user.name, message: newMessage },
-      { sender: "Rodrigo", message: "" },
+      { sender: "Helper Bot", message: "" },
     ];
   
     try {
@@ -71,7 +71,7 @@ const BotChatboxModal = () => {
           >
             {messages.map((message, index) => (
               <div key={index} className="message">
-                <span className={message.sender === "Rodrigo" ? "text-primary" : "text-warning"} style={{ fontWeight: "700" }}>
+                <span className={message.sender === "Helper Bot" ? "text-primary" : "text-warning"} style={{ fontWeight: "700" }}>
                   {message.sender}:{" "}
                 </span>
                 <span>{message.message}</span>
