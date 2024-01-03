@@ -86,7 +86,7 @@ const BotChatboxModal = () => {
                   {message.sender}:{" "}
                 </span>
                 <span style={{ whiteSpace: "pre-line" }}>
-                  {message.message}
+                  <pre>{message.message}</pre>
                 </span>
               </div>
             ))}
