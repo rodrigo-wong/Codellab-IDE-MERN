@@ -6,7 +6,7 @@ import socket from "../socket";
 import { useUserContext } from "../context/UserContext";
 
 const CodeEditor = (data) => {
-  const { roomInfo, user, code, setCode, darkMode, colorScheme} = useUserContext();
+  const { roomInfo, user, code, setCode, darkMode} = useUserContext();
   const [readOnly, setReadOnly] = useState(false);
   const [updateTimeOut, setUpdateTimeOut] = useState(null);
 
