@@ -6,7 +6,7 @@ import { useUserContext } from "../context/UserContext";
 const BotChatboxModal = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, colorScheme } = useUserContext();
-  const [messages, setMessages] = useState([{sender: "Rodrigo", message:`Hi ${user.name}, how can I assist you today?`}])
+  const [messages, setMessages] = useState([{sender: "Helper Bot", message:`Hi ${user.name}, you can ask me basic python related question or type /help to see what I can do for you?`}])
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
 
