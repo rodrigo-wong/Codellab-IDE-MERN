@@ -6,8 +6,6 @@ import { useUserContext } from "../context/UserContext";
 const BotChatboxModal = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, colorScheme } = useUserContext();
-  const [loading, setLoading] = useState(false);
-  const [isServerIdle, setIsServerIdle] = useState(false);
   const [messages, setMessages] = useState([
     {
       sender: "Helper Bot",
@@ -21,22 +19,21 @@ const BotChatboxModal = () => {
   const handleClose = () => setShowModal(false);
 
   const handleSendMessage = async () => {
-    setLoading(true);
-
-    var timeout = setTimeout(() => {
-      newMessages[newMessages.length - 1].message = "I was asleep. Give me one minute to reboot and process your request.";
-    }, 3000);
-
-    const newMessages = [
-      ...messages,
-      { sender: user.name, message: newMessage },
-      { sender: "Helper Bot", message: "" },
-    ];
-
-    newMessages[newMessages.length - 1].message = "Processing...";
-
-    setNewMessage("");
+    const processingMessage = { sender: "Helper Bot", message: "Processing..." };
+    setMessages(prevMessages => [...prevMessages, { sender: user.name, message: newMessage }, processingMessage]);
+  
+    let timeout;
+  
+    timeout = setTimeout(() => {
+      setMessages(prevMessages => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = { ...processingMessage, message: "Server is being rebooted at the moment. Please give me 1-2 minutes." };
+        return newMessages;
+      });
+    }, 3000); 
+  
     try {
+      
       const data = await fetch(`${process.env.REACT_APP_CHATBOT_URL}/predict`, {
         method: "POST",
         headers: {
@@ -46,15 +43,26 @@ const BotChatboxModal = () => {
           message: newMessage,
         }),
       }).then((res) => res.json());
-
-      newMessages[newMessages.length - 1].message = data.answer;
+  
+      clearTimeout(timeout);
+  
+      setMessages(prevMessages => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = { ...processingMessage, message: data.answer };
+        return newMessages;
+      });
     } catch (err) {
       console.log(err);
+      setMessages(prevMessages => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = { ...processingMessage, message: "An error occurred." };
+        return newMessages;
+      });
+    } finally {
+      setNewMessage("");
     }
-    clearTimeout(timeout);
-    setMessages(newMessages);
   };
-
+  
   useEffect(() => {
     if (chatContainerRef.current) {
       const { scrollHeight, clientHeight } = chatContainerRef.current;
