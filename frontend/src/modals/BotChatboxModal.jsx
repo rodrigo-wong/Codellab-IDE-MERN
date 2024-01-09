@@ -80,6 +80,7 @@ const BotChatboxModal = () => {
         show={showModal}
         onHide={handleClose}
         dialogClassName="modal-bottom-right"
+        size="xl"
       >
         <Modal.Header closeButton>
           <Modal.Title> 🤖 Python AI Helper</Modal.Title>
