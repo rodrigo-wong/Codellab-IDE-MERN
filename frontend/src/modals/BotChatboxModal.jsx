@@ -21,7 +21,7 @@ const BotChatboxModal = () => {
   const handleSendMessage = async () => {
     const processingMessage = { sender: "Helper Bot", message: "Processing..." };
     setMessages(prevMessages => [...prevMessages, { sender: user.name, message: newMessage }, processingMessage]);
-  
+    setNewMessage("");
     let timeout;
   
     timeout = setTimeout(() => {
@@ -58,8 +58,6 @@ const BotChatboxModal = () => {
         newMessages[newMessages.length - 1] = { ...processingMessage, message: "An error occurred." };
         return newMessages;
       });
-    } finally {
-      setNewMessage("");
     }
   };
   
