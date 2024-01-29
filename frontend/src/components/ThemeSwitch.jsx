@@ -11,6 +11,7 @@ const ThemeSwitch = ({isNav}) => {
           type="checkbox"
           role="switch"
           id="flexSwitchCheckDefault"
+          checked = {darkMode}
           onClick={() => {
             setDarkMode(!darkMode);
             setColorScheme({

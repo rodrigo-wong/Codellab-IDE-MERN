@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Tabs, Tab, Image } from "react-bootstrap";
 import CreateRoom from "../components/CreateRoom";
 import JoinRoom from "../components/JoinRoom";
@@ -10,8 +10,8 @@ import ThemeSwitch from "../components/ThemeSwitch";
 
 const Home = () => {
   const [key, setKey] = useState("createRoom");
-  const { colorScheme, darkMode, setDarkMode, setColorScheme} = useUserContext();
-
+  const { colorScheme } = useUserContext();
+  
   return (
     <Container
       fluid

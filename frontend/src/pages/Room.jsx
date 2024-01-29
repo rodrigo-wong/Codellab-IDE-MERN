@@ -159,7 +159,7 @@ const Room = () => {
     <Container fluid className={"p-0 " + colorScheme.backgroundColor}>
       {roomInfo ? (
         <Container fluid className="p-0">
-          <Container fluid className="p-0" style={{ height: "8vh" }}>
+          <Container fluid className="p-0" style={{ width:"100%" }}>
             <NavBar handleLeave={handleLeave} />
           </Container>
           <Container fluid className="mt-2">
