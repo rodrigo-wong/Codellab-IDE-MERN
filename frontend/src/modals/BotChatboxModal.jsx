@@ -1,4 +1,3 @@
-// BotChatboxModal.js
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, InputGroup, Form } from "react-bootstrap";
 import { useUserContext } from "../context/UserContext";
@@ -71,7 +70,7 @@ const BotChatboxModal = () => {
   return (
     <>
       <Button variant="warning" onClick={handleShow}>
-        🤖 AI Help Chat
+        🤖 <span className="button-text">AI Help Chat</span>
       </Button>
 
       <Modal
@@ -81,7 +80,7 @@ const BotChatboxModal = () => {
         size="xl"
       >
         <Modal.Header closeButton>
-          <Modal.Title> 🤖 Python AI Helper</Modal.Title>
+          <Modal.Title> 🤖 <span className="button-text">Python AI Helper</span></Modal.Title>
         </Modal.Header>
         <Modal.Body
           className={colorScheme.backgroundColor + colorScheme.textColor}

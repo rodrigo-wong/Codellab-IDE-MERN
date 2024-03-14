@@ -164,10 +164,9 @@ const Room = () => {
           </Container>
           <Container fluid className="mt-2">
             <Row>
-              <Col lg={6} className="p-0 mb-3" style={{ height: "92vh" }}>
+              <Col lg={7} className="p-0 mb-3" style={{ height: "92vh" }}>
                 <Container
                   className="text-center mt-1"
-                  style={{ marginLeft: "5%" }}
                 >
                   <Container className="d-flex justify-content-center">
                     <div className="d-flex mb-2">
@@ -252,8 +251,8 @@ const Room = () => {
                 </Container>
               </Col>
 
-              <Col lg={6} className="p-0">
-                <Container className="mt-2" style={{ width: "90%" }}>
+              <Col lg={5} className="p-0">
+                <Container className="mt-2" style={{ width: "100%" }}>
                   <Container
                     className={"container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 " + colorScheme.backgroundColor + colorScheme.textColor}
                     style={{

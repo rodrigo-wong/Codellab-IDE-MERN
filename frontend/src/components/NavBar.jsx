@@ -15,25 +15,25 @@ const NavBar = (leaveRoom) => {
         <Container fluid className="p-1" style={{ backgroundColor: "#777" }}>
           <Container className="p-0 mx-3">
             <Container className="d-flex align-items-center">
-              <Navbar.Text className="fs-3" style={{ color: "white" }}>
+              <Navbar.Text style={{ color: "white" }}>
                 Room#: {user.room}
               </Navbar.Text>
               <Button
                 className="btn-danger ms-4 me-4"
                 onClick={leaveRoom.handleLeave}
               >
-                Leave room
+                <span className="button-text">Leave room</span>
                 <FaSignOutAlt className="logout-icon ms-2" />
               </Button>
-              <BotChatboxModal/>
+              <BotChatboxModal />
             </Container>
           </Container>
-          <Navbar.Collapse className="mx-3 text-white">
-            <ThemeSwitch isNav={true}/>
-            <Navbar.Text className="m-0 p-0" style={{ color: "white" }}>
+          <Container className="d-flex justify-content-end mx-3 text-white">
+            <ThemeSwitch isNav={true} />
+            <span className="button-text ms-3 border-start ps-3">
               Signed in as: {user.name}
-            </Navbar.Text>
-          </Navbar.Collapse>
+            </span>
+          </Container>
         </Container>
       </Navbar>
     </Container>
