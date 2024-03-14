@@ -15,7 +15,7 @@ const NavBar = (leaveRoom) => {
         <Container fluid className="p-1" style={{ backgroundColor: "#777" }}>
           <Container className="p-0 mx-3">
             <Container className="d-flex align-items-center">
-              <Navbar.Text style={{ color: "white" }}>
+              <Navbar.Text className="fs-5" style={{ color: "white" }}>
                 Room#: {user.room}
               </Navbar.Text>
               <Button
