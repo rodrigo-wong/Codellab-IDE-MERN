@@ -23,20 +23,21 @@ const JoinRoom = () => {
             roomId: room,
             name: name,
           }),
-        }).then((res) => res.json());
-        if (!data) {
+        })
+        if (data.status === 400 || data.status === 401) {
           throw new Error("Room does not exist");
         }
-        sessionStorage.setItem("roomInfo", JSON.stringify(data));
+        const response = await data.json();
+        sessionStorage.setItem("roomInfo", JSON.stringify(response));
         sessionStorage.setItem(
           "user",
           JSON.stringify({ name: name, room: room })
         );
         setUser({ name: name, room: room });
-        setRoomInfo(data);
+        setRoomInfo(response);
         navigate(`/room/${room}`);
       } catch (err) {
-        console.log(err.message);
+        //console.log(err.message);
         toast.error(err.message, {
           position: "bottom-center",
           autoClose: 5000,

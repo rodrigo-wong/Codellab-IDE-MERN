@@ -6,6 +6,13 @@ const createRoom = expressAsyncHandler(async (req, res) => {
 
   if (roomId && name) {
     try {
+      // Check if the room with the given roomId already exists
+      const existingRoom = await Room.findOne({ roomId: roomId });
+      if (existingRoom) {
+        return res.status(400).json({ message: 'Room already exists' });
+      }
+
+      // If the room does not exist, create a new room
       const newRoom = await Room.create({
         roomId: roomId,
         users: name,
@@ -17,6 +24,7 @@ const createRoom = expressAsyncHandler(async (req, res) => {
     }
   }
 });
+
 
 const joinRoom = expressAsyncHandler(async (req, res) => {
   const { roomId, name } = req.body;
@@ -32,8 +40,12 @@ const joinRoom = expressAsyncHandler(async (req, res) => {
         },
         { new: true }
       );
+      if (!room) {
+        return res.status(400).json({ message: 'Room does not exist.' });
+      }
       res.json(room);
     } catch (err) {
+      res.status(401).send(err.message);
       console.log(err.message);
     }
   }
@@ -73,7 +85,6 @@ const editPrivacy = expressAsyncHandler(async (req, res) => {
     { editingPrivacy: privacy },
     { new: true }
   );
-  console.log("in editPrivacy");
   if (room) res.status(200).json(room);
   else res.status(400);
 });

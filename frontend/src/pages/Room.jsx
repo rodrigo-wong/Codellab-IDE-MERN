@@ -25,6 +25,7 @@ const Room = () => {
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const outputRef = useRef(null);
+  const providerRef = useRef("null");
   const [admin, setAdmin] = useState(false);
   const [fontSize, setFontSize] = useState("16");
   const navigate = useNavigate();
@@ -45,8 +46,8 @@ const Room = () => {
     const doc = new Y.Doc();
 
     //Connect with WebRTC
-    const provider = new WebrtcProvider(user.room, doc, {
-      signaling: ['ws://localhost:5021/webrtc'], // Use your socket for signaling
+    providerRef.current = new WebrtcProvider(user.room, doc, {
+      signaling: [process.env.REACT_APP_WEBRTC_URL], // Use your socket for signaling
     });
     const type = doc.getText("monaco");
     // Bind YJS to Monaco
@@ -54,7 +55,7 @@ const Room = () => {
       type,
       editorRef.current.getModel(),
       new Set([editorRef.current]),
-      provider.awareness
+      providerRef.current.awareness
     );
   };
 
@@ -79,6 +80,7 @@ const Room = () => {
     if (roomInfo) {
       socket.emit("leaveRoom", { roomInfo, user });
       sessionStorage.clear();
+      providerRef.current.destroy();
       setRoomInfo(null);
       setUser(null);
       navigate("/");
@@ -119,15 +121,13 @@ const Room = () => {
         setAdmin(false);
       }
     }
-  }, [roomInfo, admin]);
+  }, [roomInfo]);
 
   useEffect(() => {
     if (!admin) {
-      if (roomInfo && roomInfo.editingPrivacy) {
-        setReadOnly(true);
-      } else {
-        setReadOnly(false);
-      }
+      setReadOnly(true);
+    } else {
+      console.log("edit");
     }
   }, [admin, roomInfo]);
 

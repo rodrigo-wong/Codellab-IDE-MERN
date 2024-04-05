@@ -34,7 +34,7 @@ const CreateRoom = () => {
             }),
           }
         );
-        if (data.status === 401) {
+        if (data.status === 400 || data.status === 401) {
           throw new Error("This room already exist");
         }
         const response = await data.json();
