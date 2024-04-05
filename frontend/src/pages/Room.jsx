@@ -127,7 +127,7 @@ const Room = () => {
     if (!admin) {
       setReadOnly(true);
     } else {
-      console.log("edit");
+      setReadOnly(false);
     }
   }, [admin, roomInfo]);
 
