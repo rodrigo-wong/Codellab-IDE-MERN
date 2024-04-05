@@ -1,44 +1,70 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState, useRef, memo } from "react";
+import { useEffect, useState, useRef} from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { bbedit, darcula } from "@uiw/codemirror-themes-all";
-import CodeEditor from "../components/CodeEditor";
-import {
-  Button,
-  Container,
-  Row,
-  Col,
-  Form,
-  InputGroup,
-  Dropdown,
-  ButtonGroup,
-} from "react-bootstrap";
+import Editor from "@monaco-editor/react";
+import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
+import { MonacoBinding } from "y-monaco";
+import { Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import DownloadModal from "../modals/DownloadModal";
 import ChatBox from "../components/ChatBox";
 import socket from "../socket";
+import Codellaborators from "../components/Codellaborators";
+import EditRights from "../components/EditRights";
+import FontSize from "../components/FontSize";
 
 const Room = () => {
-  const { user, roomInfo, setRoomInfo, setUser, code, darkMode, colorScheme } = useUserContext();
+  const { user, roomInfo, setRoomInfo, setUser, darkMode, colorScheme } =
+    useUserContext();
+  const [editorContent, setEditorContent] = useState("");
   const [output, setOutput] = useState("");
   const [codeRunning, setCodeRunning] = useState(false);
   const [input, setInput] = useState("");
   const outputRef = useRef(null);
   const [admin, setAdmin] = useState(false);
-  const [publicEdit, setPublicEdit] = useState(false);
   const [fontSize, setFontSize] = useState("16");
   const navigate = useNavigate();
+
+  const [readOnly, setReadOnly] = useState(false);
+
+  const editorRef = useRef(null);
+
+  const handleEditorDidMount = (editor, monaco) => {
+    editorRef.current = editor;
+
+    // Add event listener for content changes
+    const model = editorRef.current.getModel();
+    model.onDidChangeContent(() => {
+      setEditorContent(model.getValue());
+    });
+
+    // initialize YJS
+    const doc = new Y.Doc();
+
+    //Connect with WebRTC
+    const provider = new WebrtcProvider(user.room, doc);
+    const type = doc.getText("monaco");
+    // Bind YJS to Monaco
+    const binding = new MonacoBinding(
+      type,
+      editorRef.current.getModel(),
+      new Set([editorRef.current]),
+      provider.awareness
+    );
+  };
 
   const handleRun = () => {
     setOutput("");
     if (!codeRunning) {
       setCodeRunning(true);
-      socket.emit("runPython", code);
+      socket.emit("runPython", editorContent);
     } else {
       setCodeRunning(false);
-      socket.emit("runPython", code);
+      socket.emit("runPython", editorContent);
     }
   };
 
@@ -58,54 +84,9 @@ const Room = () => {
     }
   };
 
-  const handleDropdownPublic = async () => {
-    setPublicEdit(false);
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_API_URL}/room/privacy`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            privacy: false,
-            roomId: roomInfo.roomId,
-          }),
-        }
-      ).then((res) => res.json());
-      socket.emit("privacyUpdate", data);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const handleDropdownPrivate = async () => {
-    setPublicEdit(true);
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_API_URL}/room/privacy`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            privacy: true,
-            roomId: roomInfo.roomId,
-          }),
-        }
-      ).then((res) => res.json());
-      socket.emit("privacyUpdate", data);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
   useEffect(() => {
     if (roomInfo && user) {
       socket.emit("joinRoom", roomInfo);
-      //fetchCode();
     } else {
       navigate("/");
     }
@@ -140,6 +121,16 @@ const Room = () => {
   }, [roomInfo, admin]);
 
   useEffect(() => {
+    if (!admin) {
+      if (roomInfo && roomInfo.editingPrivacy) {
+        setReadOnly(true);
+      } else {
+        setReadOnly(false);
+      }
+    }
+  }, [admin, roomInfo]);
+
+  useEffect(() => {
     if (outputRef.current !== null) {
       if (outputRef.current.view !== undefined) {
         outputRef.current.view.viewState.scrollAnchorPos = output.length;
@@ -159,81 +150,34 @@ const Room = () => {
     <Container fluid className={"p-0 " + colorScheme.backgroundColor}>
       {roomInfo ? (
         <Container fluid className="p-0">
-          <Container fluid className="p-0" style={{ width:"100%" }}>
+          <Container fluid className="p-0" style={{ width: "100%" }}>
             <NavBar handleLeave={handleLeave} />
           </Container>
           <Container fluid className="mt-2">
             <Row>
               <Col lg={7} className="p-0 mb-3" style={{ height: "92vh" }}>
-                <Container
-                  className="text-center mt-1"
-                >
+                <Container className="text-center mt-1">
                   <Container className="d-flex justify-content-center">
-                    <div className="d-flex mb-2">
-                      <div className={"fs-5 " + colorScheme.textColor}>Editor: &nbsp;</div>
-                      {admin ? (
-                        <div>
-                          <Dropdown as={ButtonGroup} size="sm">
-                            <Button variant="secondary">Editing rights:</Button>
-                            <Dropdown.Toggle
-                              split
-                              variant="secondary"
-                              id="dropdown-split-basic"
-                            />
-
-                            <Dropdown.Menu>
-                              <Dropdown.Item
-                                onClick={handleDropdownPrivate}
-                                active={publicEdit ? true : false}
-                              >
-                                Private
-                              </Dropdown.Item>
-                              <Dropdown.Item
-                                onClick={handleDropdownPublic}
-                                active={publicEdit ? false : true}
-                              >
-                                Public
-                              </Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                    <Dropdown
-                      className={admin ? "ms-2" : ""}
-                      onSelect={(size) => setFontSize(size)}
-                    >
-                      <Dropdown.Toggle
-                        variant="secondary"
-                        id="dropdown-basic"
-                        size="sm"
-                      >
-                        Font Size: {fontSize}
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        {["10", "12", "14", "16", "18", "20", "22"].map(
-                          (fontSize) => (
-                            <Dropdown.Item key={fontSize} eventKey={fontSize}>
-                              {fontSize}
-                            </Dropdown.Item>
-                          )
-                        )}
-                      </Dropdown.Menu>
-                    </Dropdown>
+                    <EditRights admin={admin} />
+                    <FontSize
+                      fontSize={fontSize}
+                      setFontSize={setFontSize}
+                      admin={admin}
+                    />
                   </Container>
-                  <Container
-                    style={{
-                      padding: "0",
-                      width: "100%",
-                      height: "77vh",
-                      textAlign: "left",
-                      fontSize: `${fontSize}px`,
-                    }}
-                  >
-                    <CodeEditor admin={admin} />
+                  <Container>
+                    <Editor
+                      className="border border-1 border-secondary"
+                      width="100%"
+                      height="77vh"
+                      theme={darkMode ? "vs-dark" : "vs"}
+                      language="python"
+                      options={{
+                        readOnly: readOnly,
+                        fontSize: fontSize, // Set your desired font size here
+                      }}
+                      onMount={handleEditorDidMount}
+                    />
                   </Container>
                 </Container>
                 <Container className="d-flex justify-content-center mt-3">
@@ -247,35 +191,24 @@ const Room = () => {
                   >
                     {codeRunning ? "Stop" : "Run"}
                   </Button>
-                  <DownloadModal code={code} />
+                  <DownloadModal code={editorContent} />
                 </Container>
               </Col>
 
               <Col lg={5} className="p-0">
                 <Container className="mt-2" style={{ width: "100%" }}>
-                  <Container
-                    className={"container-fit-content d-flex flex-wrap border border-secondary align-items-center py-0 " + colorScheme.backgroundColor + colorScheme.textColor}
-                    style={{
-                      height: "9vh",
-                      overflowY: "scroll",
-                    }}
+                  <Codellaborators />
+                  <p
+                    className={"text-center my-1 fs-5 " + colorScheme.textColor}
                   >
-                    <span>
-                      <strong>Codellaborators:&nbsp;</strong>
-                    </span>
-                    {roomInfo.users.map((user, index) => (
-                      <span key={index}>
-                        {index == 0 ? user + " (Admin)" : user} ; &nbsp;
-                      </span>
-                    ))}
-                  </Container>
-                  <p className={"text-center my-1 fs-5 " + colorScheme.textColor}>Shell</p>
+                    Shell
+                  </p>
                   <div className="border border-1 border-secondary">
                     <CodeMirror
                       ref={outputRef}
                       height="40vh"
                       value={output}
-                      theme={darkMode ? darcula :bbedit}
+                      theme={darkMode ? darcula : bbedit}
                       readOnly={true}
                     />
                   </div>
@@ -299,7 +232,13 @@ const Room = () => {
                     />
                   </InputGroup>
                   <Container fluid className="mb-3">
-                    <p className={"fs-5 text-center m-1 " + colorScheme.textColor}>Chat</p>
+                    <p
+                      className={
+                        "fs-5 text-center m-1 " + colorScheme.textColor
+                      }
+                    >
+                      Chat
+                    </p>
                     <ChatBox />
                   </Container>
                 </Container>
@@ -314,4 +253,4 @@ const Room = () => {
   );
 };
 
-export default memo(Room);
+export default Room;

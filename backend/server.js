@@ -85,17 +85,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on('sendChanges', (data) => {
-    // Broadcast the changed code to all connected clients except the sender
-    socket.to(data.roomId).emit('receiveChanges', data.code);
-  });
-
-  // socket.on("sendChanges", (data)=>{
-  //   // console.log(data.roomId);
-  //    //console.log(data.delta);
-  //   socket.to(data.roomId).emit("receiveChanges", data.delta)
-  //  }) 
-
   socket.on("sendMessage", (data)=> {
     //console.log(data);
     const sender = data.user.name

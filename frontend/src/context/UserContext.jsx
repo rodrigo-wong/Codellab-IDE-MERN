@@ -10,7 +10,6 @@ export const useUserContext = () => {
 
 // Create the context provider component
 export const UserContextProvider = ({ children }) => {
-  const [code, setCode] = useState("")
   const [user, setUser] = useState();
   const [roomInfo, setRoomInfo] = useState();
   const [currentCaret, setCurrentCaret] = useState(0);
@@ -18,8 +17,6 @@ export const UserContextProvider = ({ children }) => {
   const [colorScheme, setColorScheme] = useState({backgroundColor:" bg-light", textColor:" text-dark"});
 
   const values = {
-    code,
-    setCode,
     user,
     setUser,
     roomInfo,

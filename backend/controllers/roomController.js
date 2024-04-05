@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const {
   createRoom,
-  updateCode,
-  fetchCode,
   joinRoom,
   leaveRoom,
   editPrivacy
@@ -11,10 +9,8 @@ const {
 
 router
   .post("/create", createRoom)
-  .put("/codeUpdate", updateCode)
   .put("/join", joinRoom)
   .put("/leave", leaveRoom)
   .put("/privacy", editPrivacy)
-  .get("/fetchCode", fetchCode);
 
 module.exports = router;

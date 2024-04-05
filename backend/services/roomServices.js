@@ -66,37 +66,6 @@ const leaveRoom = expressAsyncHandler(async (req, res) => {
   }
 });
 
-const updateCode = expressAsyncHandler(async (req, res) => {
-  const { code } = req.body;
-  const { roomId } = req.query;
-
-  try {
-    const room = await Room.findOneAndUpdate(
-      { roomId: roomId },
-      { code: code }
-    );
-    if (room) {
-      res.send("Succesfull update");
-    } else {
-      throw new Error("Room does not exist");
-    }
-  } catch (err) {
-    console.log(err.message);
-    res.send(err.message);
-  }
-});
-
-const fetchCode = expressAsyncHandler(async (req, res) => {
-  const { roomId } = req.query;
-
-  try {
-    const room = await Room.findOne({ roomId: roomId });
-    res.send(room.code);
-  } catch (err) {
-    console.log(err.message);
-  }
-});
-
 const editPrivacy = expressAsyncHandler(async (req, res) => {
   const { privacy, roomId } = req.body;
   const room = await Room.findOneAndUpdate(
@@ -111,8 +80,6 @@ const editPrivacy = expressAsyncHandler(async (req, res) => {
 
 module.exports = {
   createRoom,
-  updateCode,
-  fetchCode,
   joinRoom,
   leaveRoom,
   editPrivacy,
