@@ -47,6 +47,7 @@ const Room = () => {
 
     //Connect with WebRTC
     const provider = new WebrtcProvider(user.room, doc);
+    console.log(provider);
     const type = doc.getText("monaco");
     // Bind YJS to Monaco
     const binding = new MonacoBinding(
