@@ -1,6 +1,6 @@
 import React from "react";
 import { useUserContext } from "../context/UserContext";
-import { useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { bbedit, darcula } from "@uiw/codemirror-themes-all";
 import Editor from "@monaco-editor/react";
@@ -28,7 +28,6 @@ const Room = () => {
   const [admin, setAdmin] = useState(false);
   const [fontSize, setFontSize] = useState("16");
   const navigate = useNavigate();
-
   const [readOnly, setReadOnly] = useState(false);
 
   const editorRef = useRef(null);
@@ -46,8 +45,9 @@ const Room = () => {
     const doc = new Y.Doc();
 
     //Connect with WebRTC
-    const provider = new WebrtcProvider(user.room, doc);
-    console.log(provider);
+    const provider = new WebrtcProvider(user.room, doc, {
+      signaling: ['ws://localhost:5021/webrtc'], // Use your socket for signaling
+    });
     const type = doc.getText("monaco");
     // Bind YJS to Monaco
     const binding = new MonacoBinding(

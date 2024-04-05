@@ -11,7 +11,6 @@ import ThemeSwitch from "../components/ThemeSwitch";
 const Home = () => {
   const [key, setKey] = useState("createRoom");
   const { colorScheme } = useUserContext();
-  
   return (
     <Container
       fluid
