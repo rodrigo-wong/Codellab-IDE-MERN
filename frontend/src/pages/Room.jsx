@@ -125,7 +125,7 @@ const Room = () => {
 
   useEffect(() => {
     if (!admin) {
-      setReadOnly(true);
+      setReadOnly(roomInfo.editingPrivacy);
     } else {
       setReadOnly(false);
     }
